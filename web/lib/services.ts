@@ -33,7 +33,7 @@ export const services: Service[] = [
     slug:'snack-box',name:'Snack Box',kicker:'Untuk pertemuan',
     description:'Pilihan paket snack yang sebelumnya ditawarkan untuk pertemuan atau kegiatan.',
     overview:'Halaman Snack Box lengkap ditemukan kembali pada repo arsip errorrrr. Terdapat empat variasi paket dan pilihan jenis snack; seluruh informasi harga berikut merupakan arsip.',
-    archivePrice:'Mulai Rp16.000 / snack',archiveSource:'Kartu 3D Snack Box pada index.php, tautan Snackbox/Snackbox.html',
+    archivePrice:'Mulai Rp16.000 / box (arsip)',archiveSource:'Kartu 3D Snack Box pada index.php, tautan Snackbox/Snackbox.html',
     archiveNotes:['Harga paket 2025: isi 3 Rp16.000, isi 4 Rp21.000, isi 5 Rp25.000, isi 7 Rp30.000','Pilihan makanan dari arsip mencakup risol, martabak, pastel, kroket, roti isi, dan jajanan tradisional'],
     inquiryTips:['Jumlah box yang diperlukan','Tanggal dan lokasi acara','Preferensi isi snack dan kemasan'],
     packages:[
@@ -47,8 +47,8 @@ export const services: Service[] = [
   {
     slug:'tumpeng-mini',name:'Tumpeng Mini',kicker:'Untuk perayaan',
     description:'Sajian tumpeng mini yang pernah ditawarkan untuk kebutuhan acara.',
-    overview:'Website lama menampilkan Tumpeng Mini melalui kartu layanan dan kartu penawaran terpisah. Informasi harga arsipnya konsisten, namun jumlah minimum dan fasilitas pengiriman belum bisa dipastikan berlaku sekarang.',
-    archivePrice:'Rp35.000 / pax (arsip)',archiveSource:'Kartu Tumpeng Mini pada index.php dan tautan NasiTumpeng/NasiTumpengMini.html',
+    overview:'Website lama menampilkan Tumpeng Mini A, B, dan C dengan komposisi lauk dan harga arsip yang berbeda. Ketentuan minimum dan fasilitas pengiriman belum bisa dipastikan masih berlaku.',
+    archivePrice:'Rp35.000–Rp38.000 / paket (arsip)',archiveSource:'Kartu Tumpeng Mini pada index.php dan tautan NasiTumpeng/NasiTumpengMini.html',
     archiveNotes:['Tercantum minimum pesanan 30 pcs','Tercantum gratis alat makan dan gratis ongkir Palembang','Halaman rincian asli tersedia pada repo errorrrr'],
     inquiryTips:['Jumlah pax','Tanggal dan lokasi acara','Pilihan lauk serta kebutuhan kemasan'],
     photo:'/archive/services/tumpeng-mini.png',
@@ -62,8 +62,8 @@ export const services: Service[] = [
   {
     slug:'prasmanan-gubukan',name:'Prasmanan & Gubukan',kicker:'Untuk acara besar',
     description:'Pilihan sajian prasmanan atau gubukan untuk acara dan rombongan.',
-    overview:'Kode lama menampilkan dua jenis penawaran: kartu Prasmanan berharga per pax dan kartu Gubukan Prasmanan berharga per box. Keduanya dipertahankan sebagai referensi berbeda, bukan disamakan menjadi satu tarif.',
-    archivePrice:'Rp32.000 / pax (Prasmanan) dan mulai Rp25.000 / box (Gubukan)',
+    overview:'Kode lama mencatat kartu Prasmanan Rp32.000/pax, kartu promosi Gubukan mulai Rp25.000/box, dan tiga pilihan Menu Nusantara pada halaman Pondokan/Gubukan dengan harga Rp20.000–Rp25.000/pax. Satuan dan penawaran ini berbeda; perlu validasi ulang.',
+    archivePrice:'Prasmanan Rp32.000/pax; Gubukan Rp25.000/box; Menu Nusantara Rp20.000–Rp25.000/pax (arsip)',
     archiveSource:'Kartu Prasmanan + Gubukan Prasmanan pada index.php; tautan Pondokan/Ponfokan.html',
     archiveNotes:['Kartu Prasmanan mencantumkan minimum 300 pcs','Penawaran Gubukan menggunakan satuan per box','Tercantum gratis alat makan dan gratis ongkir Palembang','File Pondokan/Ponfokan.html ditemukan pada repo errorrrr'],
     inquiryTips:['Jenis acara dan jumlah tamu','Lokasi, tanggal, serta durasi penyajian','Pilihan prasmanan atau gubukan dan kebutuhan perlengkapan'],
