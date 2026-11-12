@@ -45,7 +45,7 @@ Visit `http://localhost:3000`. With no Supabase credentials, storefront and What
 
 ## Payment integration status
 
-**DANA API not connected.** The old `dana-id/php_client` dependency is evidence of exploration, not a deployed merchant flow. Official DANA merchant onboarding, credentials, signed requests, secure webhook signature verification and sandbox tests are needed before enabling QRIS/DANA payment. Do not accept client-supplied "paid" statuses. Payment confirmation in the admin is explicitly for **manual offline** verification only.
+**Midtrans is the historical payment provider; API is NOT connected to this modernization branch.** Merchant email receipts show historical QRIS successes in January 2025, but the PHP repository does not contain a working Midtrans transaction API integration. The original `dana-id/php_client` and `pembayaran_dana.php` represent a separate DANA experiment with a simulated QR. To activate genuine payments, confirm merchant account status and configure **Midtrans Server Key** only in server-side environment variables; implement backend-only Snap creation, signed notification verification, amount matching and idempotent order state transitions. Do not mark any order paid based on browser callbacks. Admin confirmations are **manual offline** only until the gateway is tested.
 
 ## Vercel
 
@@ -56,3 +56,11 @@ Create a new Vercel project connected to this repository. Set `Root Directory = 
 Implemented: responsive storefront, product search/filter, local cart with WhatsApp inquiry, Supabase-backed account login/sign-up when configured, authenticated checkout API, admin dashboards, menu activation and creation, order progress, manual-payment status control, RLS SQL and basic SEO metadata.
 
 Before real transactions: provision separate Supabase project, verify business menu/phone/shipping details, import legacy MySQL user/order data using a controlled migration (do not migrate SHA-1 password hashes as authentication credentials), set the admin account, merchant approvals, DANA sandbox/webhooks, integration and E2E tests, build checks, and deployment monitoring.
+
+## Legacy content restoration (2026-11-12)
+
+- Restored the historical catalog's **18 unique product names** (the PHP source rendered 20 cards with repeated Nasi Ayam Bakar and Nasi Kerang Rica; Nasi Kerang Rica also had conflicting reference prices). Historical prices are preview-only.
+- Restored editorial sections for legacy bestseller mentions (including Nasi Britani and Rice Bowl Ayam Madu), daily catering, snack boxes, tumpeng mini, prasmanan/gubukan, and service highlights.
+- No independent bakery / bread product page exists in the available original repository.
+- **Original product photos are not in Git history:** `index.php` references `assets/images/*`, but the repository never included that directory. Do NOT swap in unrelated stock/generated product images. Request the actual originals from the merchant before activating the gallery or photo-based product cards.
+- The old free-delivery promotion and testimonials are not treated as current commercial claims until confirmed.
