@@ -1,66 +1,180 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, CheckCircle2, ChevronDown, Clock3, HeartHandshake, Leaf, MapPin, Menu, Minus, Plus, Search, ShoppingBag, Sparkles, Truck, UtensilsCrossed, X } from 'lucide-react';
+import {
+  ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight,
+  Clock3, HeartHandshake, Leaf, MapPin, Menu, Minus, Plus, Search,
+  ShoppingBag, Sparkles, Truck, UtensilsCrossed, X,
+} from 'lucide-react';
 import { formatRupiah, type Product } from '@/lib/catalog';
 import { useCart } from '@/components/cart-provider';
-import FoodArt from '@/components/food-art';
+import ProductVisual from '@/components/product-visual';
 import ServiceCards from '@/components/service-cards';
 
-const waPhone='6281268552388'; // existing public ordering number in legacy PHP
-function whatsappUrl(message:string){ return `https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`; }
-export default function Storefront({products,live}:{products:Product[];live:boolean}){
-  const [category,setCategory]=useState('Semua');
-  const [search,setSearch]=useState('');
-  const [drawer,setDrawer]=useState(false);
-  const [mobileNav,setMobileNav]=useState(false);
-  const [showAll,setShowAll]=useState(false);
-  const cart=useCart();
-  const categories=useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
-  const filtered=useMemo(()=>products.filter(p=>(category==='Semua'||p.category===category)&&p.name.toLowerCase().includes(search.toLowerCase())),[category,products,search]);
-  const visible=showAll?filtered:filtered.slice(0,8);
-  const chosen=cart.items.map(i=>({item:i,product:products.find(p=>p.slug===i.slug)})).filter((x):x is {item:typeof cart.items[number];product:Product}=>Boolean(x.product));
-  const subtotal=chosen.reduce((sum,x)=>sum+x.product.price_idr*x.item.quantity,0);
-  const msg=chosen.length ? `Halo Dapur Ummi Kyana, saya ingin konfirmasi ketersediaan dan harga menu berikut:\n${chosen.map(x=>`- ${x.product.name} × ${x.item.quantity}`).join('\n')}\n\nMohon informasi harga final, pengiriman dan cara pembayaran. Terima kasih.` : 'Halo Dapur Ummi Kyana, saya ingin bertanya mengenai menu dan pemesanan.';
-  return <>
-    <div className="topline"><span><Sparkles size={13}/> Hidangan rumahan, dibuat dengan sepenuh hati</span><span className="topline-right"><MapPin size={13}/> Palembang, Sumatera Selatan</span></div>
-    <header className="site-header"><div className="container header-inner">
-      <a href="#beranda" className="logo-lockup" aria-label="Dapur Ummi Kyana — beranda"><span className="logo-symbol"><UtensilsCrossed size={22} strokeWidth={2.2}/></span><span><strong>Dapur Ummi</strong><small>KYANA • PALEMBANG</small></span></a>
-      <nav className={`nav-menu ${mobileNav?'nav-open':''}`} aria-label="Menu utama">
-        <a href="#beranda" onClick={()=>setMobileNav(false)}>Beranda</a><a href="#menu" onClick={()=>setMobileNav(false)}>Menu</a><Link href="/layanan" onClick={()=>setMobileNav(false)}>Paket & Catering</Link><a href="#tentang" onClick={()=>setMobileNav(false)}>Tentang Kami</a><a href="#cara-pesan" onClick={()=>setMobileNav(false)}>Cara Pesan</a>
+const waPhone = '6281268552388';
+const whatsappUrl = (message:string) => 'https://wa.me/'+waPhone+'?text='+encodeURIComponent(message);
+const archiveQuotes = [
+  'Menu Makanannya beragam, jadi pengen pesen lagi mana murah di kantong.',
+  'Menu nya enak-enak, apalagi ayam bakar nya. Favorit banget tuh menunya!',
+];
+
+export default function Storefront({products, live}:{products:Product[];live:boolean}) {
+  const cart = useCart();
+  const [category, setCategory] = useState('Semua');
+  const [search, setSearch] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [mobileNav, setMobileNav] = useState(false);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [testimonial, setTestimonial] = useState(0);
+
+  const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
+  const featured = useMemo(()=>{
+    const highlighted = products.filter(p=>p.featured);
+    return (highlighted.length ? highlighted : products).slice(0,4);
+  },[products]);
+  const current = featured[active%Math.max(1,featured.length)] || products[0];
+  const filtered = useMemo(()=>
+    products.filter(p=>(category==='Semua'||p.category===category)&&
+      p.name.toLocaleLowerCase('id-ID').includes(search.toLocaleLowerCase('id-ID'))),
+    [products,category,search]);
+  const visible = showAll ? filtered : filtered.slice(0,8);
+  const chosen = cart.items.map(item=>({item,product:products.find(p=>p.slug===item.slug)}))
+    .filter((item):item is {item:typeof cart.items[number];product:Product}=>Boolean(item.product));
+  const subtotal = chosen.reduce((sum,{item,product})=>sum+product.price_idr*item.quantity,0);
+  const whatsAppMessage = chosen.length
+    ? 'Halo Dapur Ummi Kyana, mohon konfirmasi ketersediaan dan harga menu berikut:\n'+
+      chosen.map(({item,product})=>'- '+product.name+' × '+item.quantity).join('\n')+
+      '\n\nMohon rincian harga final, pengiriman, dan cara pembayaran. Terima kasih.'
+    : 'Halo Dapur Ummi Kyana, saya ingin bertanya tentang menu dan pemesanan.';
+
+  useEffect(()=>{
+    if(paused || featured.length<2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const interval = window.setInterval(()=>setActive(index=>(index+1)%featured.length),6200);
+    return ()=>window.clearInterval(interval);
+  },[featured.length,paused]);
+
+  const changeSlide = (direction:number) => {if(featured.length<2)return;setActive(index=>(index+direction+featured.length)%featured.length);};
+  const addToCart = (slug:string) => { cart.add(slug); setDrawer(true); };
+
+  return <div className="market-root">
+    <div className="market-topline"><div className="container market-topline-content"><span><Sparkles size={13}/> Cita rasa rumahan dari Palembang</span><span><MapPin size={13}/> Palembang, Sumatera Selatan</span></div></div>
+    <header className="market-header"><div className="container market-nav">
+      <Link className="market-brand" href="/" aria-label="Dapur Ummi Kyana — beranda">
+        <span className="market-brand-mark"><UtensilsCrossed size={24} strokeWidth={1.8}/></span>
+        <span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span>
+      </Link>
+      <nav className={'market-links '+(mobileNav?'market-links--open':'')} aria-label="Navigasi utama">
+        <a href="#beranda" onClick={()=>setMobileNav(false)}>Beranda</a>
+        <a href="#menu" onClick={()=>setMobileNav(false)}>Menu</a>
+        <Link href="/layanan" onClick={()=>setMobileNav(false)}>Paket & Catering</Link>
+        <a href="#tentang" onClick={()=>setMobileNav(false)}>Tentang</a>
       </nav>
-      <div className="header-actions"><a href={whatsappUrl('Halo Dapur Ummi Kyana, saya ingin tanya tentang menu.')} target="_blank" rel="noopener noreferrer" className="header-contact">Hubungi Kami <ArrowUpRight size={15}/></a><button type="button" className="cart-toggle" aria-label={`Buka keranjang, ${cart.count} item`} onClick={()=>setDrawer(true)}><ShoppingBag size={20}/>{cart.count>0&&<span className="cart-count">{cart.count}</span>}</button><button type="button" className="mobile-menu-btn" aria-label={mobileNav?'Tutup menu':'Buka menu'} aria-expanded={mobileNav} onClick={()=>setMobileNav(!mobileNav)}>{mobileNav?<X size={23}/>:<Menu size={23}/>}</button></div>
-    </div></header>
-    <main>
-      <section id="beranda" className="hero"><div className="container hero-grid">
-        <div className="hero-copy"><div className="eyebrow"><span className="mini-dot"/> DAPUR UMMI KYANA • PALEMBANG</div><h1>Rasa rumah,<br/><em>di setiap</em><br/>suapan.</h1><p>Menu rumahan dan nasi box pilihan untuk menemani hari-harimu. Diracik dengan cita rasa yang akrab, untuk momen yang istimewa.</p><div className="hero-cta"><a className="btn btn-primary" href="#menu">Jelajahi menu <ArrowRight size={18}/></a><a className="text-link" href="#tentang">Kenali dapur kami <ArrowUpRight size={17}/></a></div><div className="hero-info"><span><Leaf size={17}/> Pilihan menu Nusantara</span><span><HeartHandshake size={17}/> Siap untuk kebutuhan acara</span></div></div>
-        <div className="hero-visual"><div className="hero-orange-circle"><span className="circle-text top">DIPERSIAPKAN DENGAN SEPENUH HATI</span><span className="circle-text bottom">DAPUR UMMI KYANA</span></div><FoodArt product={products[0]||{id:'',slug:'',name:'',category:'',description:'',price_idr:0,active:true,featured:true,accent:'amber'}}/><div className="hero-card"><span className="hero-card-icon"><UtensilsCrossed size={20}/></span><span><strong>Menu pilihan</strong><small>Hangat. Lezat. Berkesan.</small></span></div><div className="hero-stamp">01 <span>/ PILIHAN RASA</span></div></div>
-      </div></section>
-      <div className="strip"><div className="container strip-inner"><span><UtensilsCrossed size={17}/> MENU RUMAHAN</span><i/> <span><Leaf size={17}/> CITA RASA NUSANTARA</span><i/> <span><Truck size={17}/> PEMESANAN MUDAH</span><i/><span><HeartHandshake size={17}/> UNTUK SETIAP MOMEN</span></div></div>
-      <section id="favorit" className="legacy-favorites section-spacing"><div className="container">
-        <div className="section-top"><div><div className="eyebrow">DARI KATALOG ORIGINAL</div><h2>Menu yang dulu <em>menjadi sorotan.</em></h2><p className="section-description">Arsip pilihan bestseller yang pernah ditampilkan dalam website pertama. Status ketersediaan dan favorit terkini perlu dikonfirmasi kepada penjual.</p></div><span className="section-index">01 — BESTSELLER</span></div>
-        <div className="legacy-favorite-grid">
-          {['Nasi Ayam Bakar','Nasi Britani','Rice Bowl Ayam Madu','Nasi Gulai Cumi Isi Tahu','Nasi Bakar'].map((name,index)=><div className="legacy-favorite" key={name}><span className="favorite-number">{String(index+1).padStart(2,'0')}</span><div><strong>{name}</strong><small>Dari arsip bestseller website lama</small></div><UtensilsCrossed size={19} aria-hidden="true"/></div>)}
-        </div>
-      </div></section>
-      <section id="menu" className="menu-section section-spacing"><div className="container"><div className="section-top"><div><div className="eyebrow">MENU PILIHAN KAMI</div><h2>Favorit dari <em>dapur kami.</em></h2><p className="section-description">Temukan pilihan menu yang pas untuk santap harian atau kebutuhan acara.</p></div><span className="section-index">02 — THE MENU</span></div>
-      {!live&&<div className="notice"><CheckCircle2 size={18}/><span><strong>Pratinjau katalog dari proyek lama.</strong> Harga dan ketersediaan adalah referensi historis, harap konfirmasi ke penjual sebelum memesan. Pembayaran online belum aktif.</span></div>}
-      <div className="menu-toolbar"><div className="category-pills" role="group" aria-label="Filter kategori">{categories.map(c=><button type="button" key={c} className={`pill ${category===c?'active':''}`} aria-pressed={category===c} onClick={()=>{setCategory(c);setShowAll(false)}}>{c}</button>)}</div><label className="menu-search"><Search size={18}/><input type="search" aria-label="Cari menu" placeholder="Cari menu..." value={search} onChange={e=>{setSearch(e.target.value);setShowAll(false)}}/></label></div>
-      <div className="menu-grid">{visible.map((product,i)=><article className="product-card" key={product.slug}><div className="product-art"><FoodArt product={product}/>{product.featured&&<span className="featured-tag">Pilihan dapur</span>}<button className="quick-add" type="button" title={`Tambah ${product.name}`} aria-label={`Tambah ${product.name} ke keranjang`} onClick={()=>cart.add(product.slug)}><Plus size={20}/></button></div><div className="product-content"><div className="product-category">{product.category}</div><h3>{product.name}</h3><p>{product.description}</p><div className="product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>{cart.add(product.slug);setDrawer(true)}}>Tambah <ArrowUpRight size={15}/></button></div></div></article>)}
+      <div className="market-nav-actions">
+        <a className="market-contact-link" href={whatsappUrl('Halo Dapur Ummi Kyana! Saya ingin bertanya tentang pemesanan.')} target="_blank" rel="noopener noreferrer">Pesan via WhatsApp <ArrowUpRight size={15}/></a>
+        <button type="button" className="market-cart-button" aria-label={'Buka keranjang, '+cart.count+' item'} onClick={()=>setDrawer(true)}><ShoppingBag size={21}/>{cart.count>0&&<span className="market-cart-badge">{cart.count}</span>}</button>
+        <button type="button" className="market-mobile-trigger" aria-label={mobileNav?'Tutup menu':'Buka menu'} aria-expanded={mobileNav} onClick={()=>setMobileNav(!mobileNav)}>{mobileNav?<X size={22}/>:<Menu size={22}/>}</button>
       </div>
-      {!filtered.length&&<div className="empty-state"><Search size={26}/><h3>Menu tidak ditemukan</h3><p>Coba kata kunci atau kategori lain.</p></div>}
-      {filtered.length>8&&!showAll&&<div className="view-more"><button type="button" className="btn btn-outline" onClick={()=>setShowAll(true)}>Lihat semua menu <ChevronDown size={17}/></button></div>}
+    </div></header>
+
+    <main>
+      <section id="beranda" className="market-hero" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+        <div className="container market-hero-grid">
+          <div className="market-hero-copy">
+            <span className="market-eyebrow"><span className="market-eyebrow-dot"/> HOMEMADE FROM PALEMBANG</span>
+            {current ? <div key={current.slug} className="market-hero-title-transition">
+              <p className="market-hero-pretitle">Diracik dengan sepenuh hati.</p>
+              <h1>Rasa rumah,<br/><em>{current.name}.</em></h1>
+            </div> : <h1>Rasa rumah,<br/><em>di setiap suapan.</em></h1>}
+            <p className="market-hero-description">Pilihan menu rumahan, nasi box, dan sajian acara. Temukan hidangan favoritmu, lalu konfirmasi ketersediaannya langsung dengan dapur kami.</p>
+            <div className="market-hero-actions">
+              <a href="#menu" className="market-button market-button--primary">Jelajahi menu <ArrowUpRight size={17}/></a>
+              <Link href="/layanan" className="market-button market-button--outline">Paket catering <ArrowRight size={17}/></Link>
+            </div>
+            <div className="market-hero-proof"><span><Leaf size={17}/> Ragam menu Nusantara</span><span><HeartHandshake size={17}/> Bisa tanya kebutuhan acara</span></div>
+          </div>
+          <div className="market-hero-gallery">
+            <div className="market-hero-stage">
+              <div className="market-hero-disc" aria-hidden="true"/>
+              <div className="market-hero-sticker"><span>MENU</span><strong>{String(active+1).padStart(2,'0')}</strong><small>/ {String(featured.length).padStart(2,'0')}</small></div>
+              {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero/></div>}
+              <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Lihat harga dan stok pada katalog':'Harga merupakan referensi arsip; konfirmasi ke penjual'}</small></div>
+              <div className="market-hero-stage-note" aria-hidden="true">Dapur Ummi Kyana / 2026</div>
+            </div>
+            <div id="favorit" className="market-hero-carousel-controls">
+              <div className="market-featured-thumbs" aria-label="Pilih hidangan unggulan">
+                {featured.map((item,index)=><button key={item.slug} type="button" className={'market-thumb '+(index===active?'market-thumb--active':'')} onClick={()=>setActive(index)} aria-pressed={index===active} aria-label={'Tampilkan '+item.name}>
+                  <ProductVisual product={item} compact/><span>{item.name}</span>
+                </button>)}
+              </div>
+              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
+            </div>
+          </div>
+        </div>
+        <div className="market-hero-ground" aria-hidden="true"/>
+      </section>
+
+      <div className="market-ticker"><div className="container market-ticker-inner"><span><Leaf size={18}/> Menu rumahan</span><i/><span><UtensilsCrossed size={18}/> Rasa Nusantara</span><i/><span><Truck size={18}/> Tanya jadwal pengiriman</span><i/><span><HeartHandshake size={18}/> Catering & acara</span></div></div>
+
+      <section className="market-catalog-section" id="menu"><div className="container">
+        <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi hidangan dari katalog Dapur Ummi Kyana. Pilih yang kamu suka, simpan ke keranjang, dan konfirmasi pemesanan.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
+        {!live&&<div className="market-menu-note"><Check size={18}/><p><strong>Pratinjau katalog lama.</strong> Harga merupakan referensi historis, bukan penawaran aktif. Konfirmasikan harga dan ketersediaan sebelum membeli. Foto asli produk masih dalam proses pemulihan.</p></div>}
+        <div className="market-product-toolbar">
+          <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
+          <label className="market-search"><Search size={17}/><input type="search" placeholder="Cari hidangan..." aria-label="Cari menu makanan" value={search} onChange={event=>{setSearch(event.target.value);setShowAll(false)}}/></label>
+        </div>
+        <div className="market-product-grid">{visible.map((product,index)=><article key={product.slug} className="market-product-card" style={{animationDelay:(Math.min(index,7)*55)+'ms'}}>
+          <div className="market-product-card-visual"><ProductVisual product={product}/>{product.featured&&<span className="market-product-flag">Pilihan dapur</span>}<button type="button" aria-label={'Tambah '+product.name+' ke keranjang'} title={'Tambah '+product.name} className="market-product-add" onClick={()=>addToCart(product.slug)}><ShoppingBag size={18}/></button></div>
+          <div className="market-product-details"><span className="market-product-category">{product.category}</span><h3>{product.name}</h3><p>{product.description}</p><div className="market-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>addToCart(product.slug)}>Tambah <Plus size={16}/></button></div></div>
+        </article>)}</div>
+        {filtered.length===0&&<div className="market-empty-result"><Search size={27}/><h3>Menu tidak ditemukan</h3><p>Coba kategori atau kata kunci lain.</p></div>}
+        {filtered.length>8&&<div className="market-view-all"><button type="button" onClick={()=>setShowAll(!showAll)}>{showAll?'Tampilkan lebih sedikit':'Lihat semua '+filtered.length+' menu'} <ChevronDown className={showAll?'market-chevron-up':''} size={17}/></button></div>}
       </div></section>
-      <section id="paket" className="service-section section-spacing"><div className="container"><div className="section-top"><div><div className="eyebrow">UNTUK ACARA & KEBUTUHAN HARIAN</div><h2>Paket & layanan <em>yang pernah tersedia.</em></h2><p className="section-description">Pilihan layanan dari website lama. Harga, kapasitas, dan ketersediaan terbaru dikonfirmasi langsung melalui WhatsApp.</p></div><span className="section-index">03 — SERVICES</span></div>
-      <ServiceCards compact/><div className="services-all-link"><Link href="/layanan">Jelajahi semua paket & layanan <ArrowRight size={18}/></Link></div></div></section>
-      <section id="tentang" className="about-section"><div className="container about-grid"><div className="about-deco"><div className="about-number">D<span>.</span></div><span className="about-deco-bottom">RASA YANG SELALU DINANTI</span></div><div className="about-copy"><div className="eyebrow">CERITA DAPUR KAMI</div><h2>Lebih dari makanan.<br/><em>Ini tentang rasa pulang.</em></h2><p>Dapur Ummi Kyana hadir untuk menghadirkan pilihan hidangan rumahan yang familiar dan mudah dipesan. Mulai dari menu nasi box hingga sajian untuk berbagai kesempatan, setiap pesanan adalah bagian dari momen yang berarti.</p><div className="about-stats"><div><strong>Palembang</strong><span>Berbasis lokal</span></div><div><strong>Nusantara</strong><span>Inspirasi cita rasa</span></div><div><strong>Personal</strong><span>Konfirmasi langsung</span></div></div></div></div></section>
-      <section className="reasons-section section-spacing"><div className="container"><div className="section-top"><div><div className="eyebrow">KENAPA DAPUR UMMI KYANA</div><h2>Kelebihan <em>dari dapur kami.</em></h2><p className="section-description">Website pertama menonjolkan pilihan menu yang variatif dan layanan pesanan untuk kebutuhan acara.</p></div><span className="section-index">04 — THE EXPERIENCE</span></div>
-      <div className="reasons-grid"><article><Leaf size={26}/><strong>Pilihan menu variatif</strong><p>Menu nasi, ayam, seafood dan hidangan untuk berbagai kebutuhan.</p></article><article><HeartHandshake size={26}/><strong>Katering & acara</strong><p>Pertanyaan pesanan rutin, snack box, tumpeng, hingga prasmanan dapat dikirim langsung kepada penjual.</p></article><article><Truck size={26}/><strong>Pengantaran di Palembang</strong><p>Area layanan serta biaya kirim perlu dikonfirmasi sebelum pesanan diselesaikan; promo gratis ongkir lama tidak otomatis berlaku.</p></article></div>
+
+      <section className="market-offer-section"><div className="container market-offer-grid">
+        <div className="market-offer-copy"><span className="market-eyebrow">DARI DAPUR UNTUK ACARA KAMU</span><h2>Ada acara? <em>Biar kami yang siapkan.</em></h2><p>Dari snack box hingga tumpeng mini dan prasmanan, temukan pilihan layanan dari arsip Dapur Ummi Kyana. Tanyakan paket, kapasitas, dan harga terkini.</p><Link href="/layanan" className="market-button market-button--primary">Eksplor paket catering <ArrowUpRight size={17}/></Link><div className="market-offer-note">Pilihan dan harga perlu konfirmasi penjual.</div></div>
+        <div className="market-offer-art"><span className="market-offer-round" aria-hidden="true"/><div className="market-offer-platter">{current&&<ProductVisual product={current} hero/>}</div><span className="market-offer-stamp">DARI DAPUR<br/>UNTUK ACARA</span><span className="market-offer-decoration" aria-hidden="true"/></div>
       </div></section>
-      <section id="cara-pesan" className="steps-section section-spacing"><div className="container"><div className="center-head"><div className="eyebrow">MUDAH & PRAKTIS</div><h2>Dari memilih, <em>hingga menikmati.</em></h2></div><div className="steps-grid"><div className="step-card"><span>01</span><ShoppingBag size={30}/><h3>Pilih menu</h3><p>Jelajahi katalog dan tambahkan menu favorit ke keranjang.</p></div><div className="step-card"><span>02</span><HeartHandshake size={30}/><h3>Konfirmasi pesanan</h3><p>Hubungi penjual untuk memastikan harga, stok, jumlah, dan pengiriman.</p></div><div className="step-card"><span>03</span><Clock3 size={30}/><h3>Atur pembayaran</h3><p>Ikuti metode pembayaran yang diberikan langsung oleh penjual. Jangan membayar ke QR simulasi.</p></div></div></div></section>
-      <section className="cta-section"><div className="container cta-inner"><div><span className="eyebrow">SIAP MEMESAN?</span><h2>Menu enak untuk<br/><em>momen yang hangat.</em></h2><p>Hubungi dapur kami untuk ketersediaan menu dan informasi pesanan.</p></div><a className="btn btn-cream" href={whatsappUrl(msg)} target="_blank" rel="noopener noreferrer">Tanya & pesan sekarang <ArrowUpRight size={19}/></a></div></section>
+
+      <section id="paket" className="market-service-section"><div className="container">
+        <div className="market-section-head"><div><span className="market-eyebrow">PILIHAN PAKET</span><h2>Setiap momen punya <em>ceritanya.</em></h2><p>Jelajahi empat layanan dari website pertama kami, kini dengan halaman detail masing-masing.</p></div><span className="market-section-number">02 / OUR SERVICES</span></div>
+        <ServiceCards compact/>
+        <div className="market-all-services"><Link href="/layanan">Selengkapnya tentang layanan <ArrowRight size={17}/></Link></div>
+      </div></section>
+
+      <section id="tentang" className="market-story-section"><div className="container market-story-grid">
+        <div className="market-story-visual"><div className="market-story-shape" aria-hidden="true"/><div className="market-story-dish">{current&&<ProductVisual product={current} hero/>}</div><span className="market-story-signature">Hangat dari dapur kami.</span><div className="market-story-vertical">D A P U R &nbsp; U M M I &nbsp; K Y A N A</div></div>
+        <div className="market-story-copy"><span className="market-eyebrow">CERITA DI BALIK DAPUR</span><h2>Lebih dari makanan. <em>Ini tentang rasa pulang.</em></h2><p>Dapur Ummi Kyana berawal dari pilihan hidangan rumahan di Palembang. Mulai dari nasi box untuk keseharian hingga menu untuk berbagai kesempatan, setiap hidangan menyimpan cerita di meja makan.</p><div className="market-story-features">
+          <div><span className="market-story-icon"><Leaf size={19}/></span><div><strong>Aneka hidangan Nusantara</strong><small>Menu nasi, ayam, seafood, dan pilihan acara.</small></div></div>
+          <div><span className="market-story-icon"><HeartHandshake size={19}/></span><div><strong>Pesanan lebih personal</strong><small>Konsultasi detail pesanan langsung dengan pengelola.</small></div></div>
+          <div><span className="market-story-icon"><MapPin size={19}/></span><div><strong>Berbasis di Palembang</strong><small>Jadwal dan jangkauan pengiriman dikonfirmasi terlebih dahulu.</small></div></div>
+        </div><Link className="market-story-link" href="/layanan">Kenali layanan kami <ArrowUpRight size={17}/></Link></div>
+      </div></section>
+
+      <section className="market-voice-section"><div className="container market-voice-grid">
+        <div><span className="market-eyebrow">ARSIP WEBSITE PERTAMA</span><h2>Kalimat yang <em>pernah ditinggalkan.</em></h2><p>Cuplikan testimoni tercantum dalam sumber website lama. Identitas dan ulasan ini belum diverifikasi ulang, jadi ditampilkan sebagai arsip, bukan rating aktif.</p></div>
+        <div className="market-voice-card"><span className="market-quote-mark" aria-hidden="true">“</span><blockquote>{archiveQuotes[testimonial]}</blockquote><div className="market-voice-bottom"><span>Arsip testimoni · Dapur Ummi Kyana</span><div><button type="button" aria-label="Lihat testimoni sebelumnya" onClick={()=>setTestimonial(index=>(index-1+archiveQuotes.length)%archiveQuotes.length)}><ArrowLeft size={17}/></button><button type="button" aria-label="Lihat testimoni berikutnya" onClick={()=>setTestimonial(index=>(index+1)%archiveQuotes.length)}><ArrowRight size={17}/></button></div></div></div>
+      </div></section>
+
+      <section id="cara-pesan" className="market-how-section"><div className="container"><div className="market-section-head market-section-head--center"><div><span className="market-eyebrow">PEMESANAN LEBIH MUDAH</span><h2>Dari pilihan, <em>jadi pesanan.</em></h2><p>Tiga langkah sederhana untuk menghubungi Dapur Ummi Kyana.</p></div></div>
+      <div className="market-how-grid"><div><span>01</span><ShoppingBag size={28}/><h3>Pilih menu favorit</h3><p>Jelajahi hidangan dan masukkan pilihan ke keranjang.</p></div><div><span>02</span><HeartHandshake size={28}/><h3>Konfirmasi pesanan</h3><p>Hubungi penjual untuk memastikan stok, harga, dan kebutuhan acara.</p></div><div><span>03</span><Clock3 size={28}/><h3>Tentukan pembayaran</h3><p>Ikuti informasi pembayaran resmi dari pengelola. Pembayaran otomatis belum diaktifkan.</p></div></div>
+      </div></section>
+
+      <section className="market-final-cta"><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Hubungi kami untuk mengetahui menu yang tersedia hari ini.</p></div><a className="market-button market-button--cream" href={whatsappUrl(whatsAppMessage)} target="_blank" rel="noopener noreferrer">Tanya & pesan sekarang <ArrowUpRight size={19}/></a></div></section>
     </main>
-    <footer className="footer"><div className="container"><div className="footer-top"><div><div className="logo-lockup footer-logo"><span className="logo-symbol"><UtensilsCrossed size={22}/></span><span><strong>Dapur Ummi</strong><small>KYANA • PALEMBANG</small></span></div><p>Hangat dari dapur kami, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#tentang">Tentang</a><a href="#cara-pesan">Cara Pesan</a></div><div><strong>Hubungi</strong><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Sumatera Selatan</span><Link href="/admin">Panel admin</Link></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Dapur Ummi Kyana. Dibuat dengan sepenuh hati.</span><span>Palembang, Indonesia</span></div></div></footer>
-    {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}><aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div className="drawer-head"><div><div className="eyebrow">PILIHAN KAMU</div><h2 id="cart-title">Keranjang <span>({cart.count})</span></h2></div><button type="button" className="icon-button" aria-label="Tutup keranjang" onClick={()=>setDrawer(false)}><X/></button></div><div className="drawer-items">{chosen.length?chosen.map(({item,product})=><div className="drawer-item" key={product.slug}><FoodArt product={product} compact/><div className="drawer-item-text"><strong>{product.name}</strong><span>{formatRupiah(product.price_idr)}</span><div className="qty"><button type="button" aria-label={`Kurangi ${product.name}`} onClick={()=>cart.subtract(product.slug)}><Minus size={14}/></button><span>{item.quantity}</span><button type="button" aria-label={`Tambah ${product.name}`} onClick={()=>cart.add(product.slug)}><Plus size={14}/></button></div></div><button type="button" aria-label={`Hapus ${product.name}`} className="remove-item" onClick={()=>cart.remove(product.slug)}><X size={16}/></button></div>):<div className="drawer-empty"><ShoppingBag size={48}/><h3>Keranjang masih kosong</h3><p>Pilih menu yang ingin dipesan terlebih dahulu.</p><button className="btn btn-outline" onClick={()=>setDrawer(false)}>Lihat menu</button></div>}</div><div className="drawer-footer"><div className="subtotal"><span>Subtotal referensi</span><strong>{formatRupiah(subtotal)}</strong></div><p>Belum termasuk ongkir; harga final dikonfirmasi penjual.</p>{live?<Link className={`btn btn-primary btn-full ${chosen.length?'':'disabled-link'}`} href="/checkout" aria-disabled={!chosen.length} onClick={e=>{if(!chosen.length)e.preventDefault()}}>Lanjut checkout <ArrowRight size={18}/></Link>:<a className={`btn btn-primary btn-full ${chosen.length?'':'disabled-link'}`} href={whatsappUrl(msg)} target="_blank" rel="noopener noreferrer" aria-disabled={!chosen.length} onClick={e=>{if(!chosen.length)e.preventDefault()}}>Konfirmasi via WhatsApp <ArrowUpRight size={18}/></a>}</div></aside></div>}
-  </>;
+
+    <footer className="market-footer"><div className="container">
+      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark"><UtensilsCrossed size={22}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
+      <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati.</span></div>
+    </div></footer>
+
+    {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}>
+      <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="market-cart-title">
+        <div className="drawer-head"><div><span className="market-eyebrow">PILIHAN KAMU</span><h2 id="market-cart-title">Keranjang <span>({cart.count})</span></h2></div><button type="button" className="icon-button" aria-label="Tutup keranjang" onClick={()=>setDrawer(false)}><X/></button></div>
+        <div className="drawer-items">{chosen.length ? chosen.map(({item,product})=><div className="drawer-item" key={product.slug}><ProductVisual product={product} compact/><div className="drawer-item-text"><strong>{product.name}</strong><span>{formatRupiah(product.price_idr)}</span><div className="qty"><button type="button" aria-label={'Kurangi '+product.name} onClick={()=>cart.subtract(product.slug)}><Minus size={14}/></button><span>{item.quantity}</span><button type="button" aria-label={'Tambah '+product.name} onClick={()=>cart.add(product.slug)}><Plus size={14}/></button></div></div><button type="button" className="remove-item" aria-label={'Hapus '+product.name} onClick={()=>cart.remove(product.slug)}><X size={16}/></button></div>) : <div className="drawer-empty"><ShoppingBag size={44}/><h3>Keranjang masih kosong</h3><p>Pilih hidangan yang ingin dipesan terlebih dahulu.</p><button type="button" className="market-button market-button--outline" onClick={()=>setDrawer(false)}>Jelajahi menu</button></div>}</div>
+        <div className="drawer-footer"><div className="subtotal"><span>{live?'Subtotal':'Subtotal referensi'}</span><strong>{formatRupiah(subtotal)}</strong></div><p>{live?'Belum termasuk ongkos kirim.':'Harga arsip perlu dikonfirmasi penjual; belum termasuk ongkir.'}</p>{live ? <Link href="/checkout" className={'market-button market-button--primary market-button--full '+(!chosen.length?'market-disabled':'')} aria-disabled={!chosen.length} onClick={event=>{if(!chosen.length)event.preventDefault()}}>Lanjut checkout <ArrowRight size={17}/></Link> : <a className={'market-button market-button--primary market-button--full '+(!chosen.length?'market-disabled':'')} href={whatsappUrl(whatsAppMessage)} target="_blank" rel="noopener noreferrer" aria-disabled={!chosen.length} onClick={event=>{if(!chosen.length)event.preventDefault()}}>Konfirmasi via WhatsApp <ArrowUpRight size={17}/></a>}</div>
+      </aside>
+    </div>}
+  </div>;
 }

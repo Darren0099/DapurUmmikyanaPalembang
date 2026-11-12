@@ -13,9 +13,14 @@ create table if not exists public.products (
   active boolean not null default true,
   featured boolean not null default false,
   accent text not null default 'amber' check (accent in ('amber','coral','red','green','gold')),
+  image_url text check (image_url is null or (length(image_url)<=2000 and image_url ~ '^https://')),
+
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- This is additive for installations that created the initial v2 table previously.
+alter table public.products add column if not exists image_url text;
+
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete restrict,
