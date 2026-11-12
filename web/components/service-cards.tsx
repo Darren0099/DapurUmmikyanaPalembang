@@ -19,6 +19,7 @@ export default function ServiceCards({compact=false}:{compact?:boolean}) {
         <span className="service-kicker">{service.kicker}</span>
         <h3>{service.name}</h3>
         <p>{service.description}</p>
+        <span className="service-card-watermark" aria-hidden="true">{service.index}</span>
         <div className="service-actions">
           <Link className="service-detail-link" href={`/layanan/${service.slug}`}>Lihat detail <ArrowUpRight size={16} aria-hidden="true"/></Link>
           <a className="service-inquiry-link" href={serviceInquiryUrl(service)} target="_blank" rel="noopener noreferrer">Tanyakan paket</a>

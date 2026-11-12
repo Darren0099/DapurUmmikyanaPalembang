@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight,
   Clock3, HeartHandshake, Leaf, MapPin, Menu, Minus, Plus, Search,
-  ShoppingBag, Sparkles, Truck, UtensilsCrossed, X,
+  ShoppingBag, Sparkles, Truck, UtensilsCrossed, X, Gift, ChefHat, HandPlatter, BadgeCheck, Play, Pause,
 } from 'lucide-react';
 import { formatRupiah, type Product } from '@/lib/catalog';
 import { useCart } from '@/components/cart-provider';
@@ -28,6 +28,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [testimonial, setTestimonial] = useState(0);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
   const featured = useMemo(()=>{
@@ -69,6 +70,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         <a href="#beranda" onClick={()=>setMobileNav(false)}>Beranda</a>
         <a href="#menu" onClick={()=>setMobileNav(false)}>Menu</a>
         <Link href="/layanan" onClick={()=>setMobileNav(false)}>Paket & Catering</Link>
+        <a href="#galeri" onClick={()=>setMobileNav(false)}>Galeri</a>
         <a href="#tentang" onClick={()=>setMobileNav(false)}>Tentang</a>
       </nav>
       <div className="market-nav-actions">
@@ -83,24 +85,27 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         <div className="container market-hero-grid">
           <div className="market-hero-copy">
             <span className="market-eyebrow"><span className="market-eyebrow-dot"/> HOMEMADE FROM PALEMBANG</span>
-            {current ? <div key={current.slug} className="market-hero-title-transition">
-              <p className="market-hero-pretitle">Diracik dengan sepenuh hati.</p>
-              <h1>Rasa rumah,<br/><em>{current.name}.</em></h1>
-            </div> : <h1>Rasa rumah,<br/><em>di setiap suapan.</em></h1>}
+            <p className="market-hero-pretitle">MAKANAN RUMAHAN & CATERING PALEMBANG</p>
+            <h1 className="market-hero-static-title">Momen terbaik<br/>dimulai dari <em>rasa.</em></h1>
+            <div className="market-hero-dish-indicator" aria-live="polite">
+              <span>SEDANG DITAMPILKAN</span>
+              <strong key={current?.slug} className="market-hero-dish-name">{current?.name || 'Menu pilihan dapur'}</strong>
+            </div>
             <p className="market-hero-description">Pilihan menu rumahan, nasi box, dan sajian acara. Temukan hidangan favoritmu, lalu konfirmasi ketersediaannya langsung dengan dapur kami.</p>
             <div className="market-hero-actions">
               <a href="#menu" className="market-button market-button--primary">Jelajahi menu <ArrowUpRight size={17}/></a>
               <Link href="/layanan" className="market-button market-button--outline">Paket catering <ArrowRight size={17}/></Link>
             </div>
-            <div className="market-hero-proof"><span><Leaf size={17}/> Ragam menu Nusantara</span><span><HeartHandshake size={17}/> Bisa tanya kebutuhan acara</span></div>
+            <div className="market-hero-proof"><span><Leaf size={17}/> Masakan Nusantara</span><span><HeartHandshake size={17}/> Pilihan acara & keluarga</span></div>
           </div>
           <div className="market-hero-gallery">
             <div className="market-hero-stage">
               <div className="market-hero-disc" aria-hidden="true"/>
-              <div className="market-hero-sticker"><span>MENU</span><strong>{String(active+1).padStart(2,'0')}</strong><small>/ {String(featured.length).padStart(2,'0')}</small></div>
+              <div className="market-hero-sticker"><span>PILIHAN</span><strong>{String(active+1).padStart(2,'0')}</strong><small>/ {String(featured.length).padStart(2,'0')}</small></div>
               {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero/></div>}
               <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Lihat harga dan stok pada katalog':'Harga merupakan referensi arsip; konfirmasi ke penjual'}</small></div>
-              <div className="market-hero-stage-note" aria-hidden="true">Dapur Ummi Kyana / 2026</div>
+              <div className="market-hero-stage-note" aria-hidden="true">HOME-COOKED FOOD · PALEMBANG</div>
+              <span className="market-hero-orbit-label" aria-hidden="true">MADE WITH CARE</span>
             </div>
             <div id="favorit" className="market-hero-carousel-controls">
               <div className="market-featured-thumbs" aria-label="Pilih hidangan unggulan">
@@ -108,13 +113,43 @@ export default function Storefront({products, live}:{products:Product[];live:boo
                   <ProductVisual product={item} compact/><span>{item.name}</span>
                 </button>)}
               </div>
-              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
+              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setPaused(value=>!value)} type="button" aria-label={paused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
             </div>
           </div>
         </div>
         <div className="market-hero-ground" aria-hidden="true"/>
       </section>
 
+      <section className="market-quick-categories" aria-label="Jelajahi kategori">
+        <div className="container market-shortcut-grid">
+          {[
+            {name:'Semua menu',label:'Jelajahi pilihan',icon:UtensilsCrossed,cat:'Semua'},
+            {name:'Nasi Box',label:'Untuk makan harian',icon:ShoppingBag,cat:'Nasi Box'},
+            {name:'Seafood',label:'Lauk penuh rasa',icon:Leaf,cat:'Seafood'},
+            {name:'Snack Box',label:'Untuk pertemuan',icon:Gift,href:'/layanan/snack-box'},
+            {name:'Tumpeng Mini',label:'Untuk perayaan',icon:ChefHat,href:'/layanan/tumpeng-mini'},
+            {name:'Prasmanan',label:'Untuk acara',icon:HandPlatter,href:'/layanan/prasmanan-gubukan'},
+          ].map(item=>{
+            const Icon=item.icon;
+            const content=<><span className="market-shortcut-icon"><Icon size={23} strokeWidth={1.6}/></span><strong>{item.name}</strong><small>{item.label}</small></>;
+            return item.href ? <Link href={item.href} className="market-shortcut-card" key={item.name}>{content}</Link>
+              : <a href="#menu" key={item.name} className="market-shortcut-card" onClick={()=>{setCategory(item.cat||'Semua');setShowAll(false)}}>{content}</a>;
+          })}
+        </div>
+      </section>
+      <section className="market-editorial-picks">
+        <div className="container">
+          <div className="market-editorial-picks-heading"><span className="market-eyebrow">PILIHAN DARI KATALOG LAMA</span><p>Inspirasi hidangan untuk berbagai suasana. Harga yang ditampilkan adalah referensi arsip.</p></div>
+          <div className="market-editorial-picks-grid">
+            {[featured[1]||products[1],featured[2]||products[2]].filter((p):p is Product=>Boolean(p)).map((p,i)=>(
+              <article className={'market-editorial-pick market-editorial-pick--'+(i+1)} key={p.slug}>
+                <div className="market-editorial-pick-image"><ProductVisual product={p} hero/></div>
+                <div className="market-editorial-pick-copy"><span>PILIHAN 0{i+1}</span><h2>{p.name}</h2><p>{p.description}</p><div><strong>{formatRupiah(p.price_idr)} <small>referensi</small></strong><button type="button" onClick={()=>addToCart(p.slug)}>Pilih menu <ArrowUpRight size={16}/></button></div></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
       <div className="market-ticker"><div className="container market-ticker-inner"><span><Leaf size={18}/> Menu rumahan</span><i/><span><UtensilsCrossed size={18}/> Rasa Nusantara</span><i/><span><Truck size={18}/> Tanya jadwal pengiriman</span><i/><span><HeartHandshake size={18}/> Catering & acara</span></div></div>
 
       <section className="market-catalog-section" id="menu"><div className="container">
@@ -143,6 +178,24 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         <div className="market-all-services"><Link href="/layanan">Selengkapnya tentang layanan <ArrowRight size={17}/></Link></div>
       </div></section>
 
+      <section className="market-gallery-section" id="galeri"><div className="container">
+        <div className="market-section-head"><div><span className="market-eyebrow">CERITA DI BALIK SETIAP SAJIAN</span><h2>Lebih dekat dengan <em>hidangan kami.</em></h2>
+          <p>Area galeri menampilkan konsep fotografi makanan editorial. Foto produk asli dari Dapur Ummi Kyana akan menggantikan gambar konsep setelah tersedia.</p></div><span className="market-section-number">03 / FOOD JOURNAL</span></div>
+        <div className="market-gallery-grid">
+          {[
+            {name:'Nasi Box',desc:'Menu untuk hari yang padat',cat:'Nasi Box'},
+            {name:'Hidangan Nusantara',desc:'Rempah, sambal, dan lauk pilihan',cat:'Nasi Pilihan'},
+            {name:'Pesanan acara',desc:'Dari snack box hingga katering',cat:'Catering'},
+          ].map((item,index)=><article className={'market-gallery-tile market-gallery-tile--'+index} key={item.name}>
+            <div className="market-gallery-image">
+              {products.length>0&&<ProductVisual product={products[(galleryIndex+index*2)%products.length]} hero/>}
+            </div>
+            <div className="market-gallery-caption"><span>0{index+1} / {item.cat}</span><h3>{item.name}</h3><p>{item.desc}</p></div>
+          </article>)}
+        </div>
+        <div className="market-gallery-bottom"><span>Foto asli akan ditambahkan setelah tersedia dari pengelola usaha.</span><button type="button" onClick={()=>setGalleryIndex(n=>(n+1)%Math.max(1,products.length))}>Ganti pilihan visual <ArrowRight size={16}/></button></div>
+      </div></section>
+
       <section id="tentang" className="market-story-section"><div className="container market-story-grid">
         <div className="market-story-visual"><div className="market-story-shape" aria-hidden="true"/><div className="market-story-dish">{current&&<ProductVisual product={current} hero/>}</div><span className="market-story-signature">Hangat dari dapur kami.</span><div className="market-story-vertical">D A P U R &nbsp; U M M I &nbsp; K Y A N A</div></div>
         <div className="market-story-copy"><span className="market-eyebrow">CERITA DI BALIK DAPUR</span><h2>Lebih dari makanan. <em>Ini tentang rasa pulang.</em></h2><p>Dapur Ummi Kyana berawal dari pilihan hidangan rumahan di Palembang. Mulai dari nasi box untuk keseharian hingga menu untuk berbagai kesempatan, setiap hidangan menyimpan cerita di meja makan.</p><div className="market-story-features">
@@ -165,7 +218,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </main>
 
     <footer className="market-footer"><div className="container">
-      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark"><UtensilsCrossed size={22}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
+      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark"><UtensilsCrossed size={22}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#galeri">Galeri</a><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
       <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati.</span></div>
     </div></footer>
 
