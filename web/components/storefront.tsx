@@ -55,7 +55,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     return ()=>window.clearInterval(interval);
   },[featured.length,paused]);
 
-  const changeSlide = (direction:number) => setActive(index=>(index+direction+featured.length)%featured.length);
+  const changeSlide = (direction:number) => {if(featured.length<2)return;setActive(index=>(index+direction+featured.length)%featured.length);};
   const addToCart = (slug:string) => { cart.add(slug); setDrawer(true); };
 
   return <div className="market-root">
@@ -79,7 +79,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </div></header>
 
     <main>
-      <section id="beranda" className="market-hero" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)}>
+      <section id="beranda" className="market-hero" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
         <div className="container market-hero-grid">
           <div className="market-hero-copy">
             <span className="market-eyebrow"><span className="market-eyebrow-dot"/> HOMEMADE FROM PALEMBANG</span>
@@ -108,7 +108,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
                   <ProductVisual product={item} compact/><span>{item.name}</span>
                 </button>)}
               </div>
-              <div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>
+              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
       <section className="market-offer-section"><div className="container market-offer-grid">
         <div className="market-offer-copy"><span className="market-eyebrow">DARI DAPUR UNTUK ACARA KAMU</span><h2>Ada acara? <em>Biar kami yang siapkan.</em></h2><p>Dari snack box hingga tumpeng mini dan prasmanan, temukan pilihan layanan dari arsip Dapur Ummi Kyana. Tanyakan paket, kapasitas, dan harga terkini.</p><Link href="/layanan" className="market-button market-button--primary">Eksplor paket catering <ArrowUpRight size={17}/></Link><div className="market-offer-note">Pilihan dan harga perlu konfirmasi penjual.</div></div>
-        <div className="market-offer-art"><span className="market-offer-round" aria-hidden="true"/><div className="market-offer-platter">{current&&<ProductVisual product={current} hero/>}</div><span className="market-offer-stamp">DARI DAPUR<br/>UNTUK ACARA</span><span className="market-offer-decoration" aria-hidden="true">✳</span></div>
+        <div className="market-offer-art"><span className="market-offer-round" aria-hidden="true"/><div className="market-offer-platter">{current&&<ProductVisual product={current} hero/>}</div><span className="market-offer-stamp">DARI DAPUR<br/>UNTUK ACARA</span><span className="market-offer-decoration" aria-hidden="true"/></div>
       </div></section>
 
       <section id="paket" className="market-service-section"><div className="container">

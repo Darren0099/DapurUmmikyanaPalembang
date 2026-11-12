@@ -10,6 +10,11 @@ export async function PATCH(request:Request,{params}:{params:Promise<{id:string}
  if(typeof body.featured==='boolean')patch.featured=body.featured;
  if(typeof body.price_idr==='number'&&Number.isInteger(body.price_idr)&&body.price_idr>0&&body.price_idr<=100000000)patch.price_idr=body.price_idr;
  if(typeof body.name==='string'&&body.name.trim().length>=3&&body.name.length<=120)patch.name=body.name.trim();
+ if('image_url' in body){
+  if(body.image_url===null||body.image_url==='')patch.image_url=null;
+  else if(typeof body.image_url==='string'&&body.image_url.length<=2000&&/^https:\/\//.test(body.image_url))patch.image_url=body.image_url;
+  else return NextResponse.json({error:'URL foto harus HTTPS.'},{status:400});
+ }
  if(!Object.keys(patch).length)return NextResponse.json({error:'Tidak ada perubahan yang valid.'},{status:400});
  const {id}=await params;
  if(!/^[0-9a-f-]{36}$/i.test(id))return NextResponse.json({error:'ID tidak valid.'},{status:400});

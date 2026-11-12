@@ -71,3 +71,11 @@ Before real transactions: provision separate Supabase project, verify business m
 - Service cards have lightweight CSS transform/opacity effects and `prefers-reduced-motion` support. No heavy animation framework is required.
 - Every archival price, minimum order and old delivery offer is labelled non-current; WhatsApp inquiries are not payment checkout.
 - See `../LEGACY_CONTENT_AUDIT.md` for detailed file-by-file comparison, historical broken links, and security review.
+
+## Frontend v3 – user-reference-inspired editorial redesign
+
+- User supplied 4 design images and a 14-second restaurant slider video as **visual references**, not assets to reproduce. The new storefront combines clean white product cards, mint and saffron campaign blocks, animated featured dish carousel, services cards, a cooking-story section and labelled legacy testimonials.
+- The carousel advances every 6.2 seconds and pauses on hover/keyboard focus; reduced-motion users do not auto-advance. Category filters, search, shopping cart and WhatsApp inquiries remain working.
+- Products can display **verified HTTPS original food photos** through `products.image_url`; when unavailable, labelled SVG food illustrations remain. The protected admin product editor can add or update the photo URL. Storefront does not claim third-party reference photography as merchant products.
+- `web/supabase/schema.sql` includes an additive `image_url` column, and `web/lib/catalog.ts` fetches it. If a dedicated store database was already initialized with the earlier schema, apply the additive SQL ALTER first.
+- No fake discounts, sold-out statuses, ratings, or unverified free shipping assertions. Historical prices stay explicitly labelled.

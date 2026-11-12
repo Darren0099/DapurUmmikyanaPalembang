@@ -51,7 +51,7 @@ export async function loadProducts(): Promise<{ products: Product[]; live: boole
       auth: { persistSession: false, autoRefreshToken: false },
     });
     const { data, error } = await client.from('products')
-      .select('id,slug,name,category,description,price_idr,active,featured,accent')
+      .select('id,slug,name,category,description,price_idr,active,featured,accent,image_url')
       .eq('active', true).order('featured', { ascending: false }).order('created_at', { ascending: false });
     if (error) throw error;
     return { products: (data ?? []) as Product[], live: true };
