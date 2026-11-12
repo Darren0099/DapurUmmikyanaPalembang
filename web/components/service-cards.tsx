@@ -15,11 +15,10 @@ export default function ServiceCards({compact=false}:{compact?:boolean}) {
       const Icon = icons[service.slug];
       return <article className="service-card service-card--enhanced" key={service.slug} style={{animationDelay:`${index*85}ms`}}>
         <span className="service-index">{service.index} / LAYANAN</span>
-        {service.slug === 'tumpeng-mini'
+        {service.photo
           ? <div className="service-photo-stage">
-              <img src="https://images.unsplash.com/photo-1707999251954-2a4abc6e1f35?auto=format&fit=crop&w=750&q=78"
-                alt="Foto ilustrasi tumpeng Indonesia, bukan produk Dapur Ummi Kyana" loading="lazy" decoding="async" referrerPolicy="no-referrer"/>
-              <span>Foto ilustrasi</span>
+              <img src={service.photo} alt={'Aset foto arsip website lama untuk '+service.name} loading="lazy" decoding="async"/>
+              <span>Foto arsip</span>
             </div>
           : <div className="service-icon-stage"><div className="service-icon-halo" aria-hidden="true"/><Icon size={38} strokeWidth={1.6} aria-hidden="true"/></div>}
         <span className="service-kicker">{service.kicker}</span>

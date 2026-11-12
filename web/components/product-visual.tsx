@@ -1,41 +1,33 @@
+import Image from 'next/image';
 import type { Product } from '@/lib/catalog';
 import FoodArt from '@/components/food-art';
+import { archiveMenuPhotos } from '@/lib/archive-media';
 
 /**
- * Documentary-style editorial placeholders, obtained from named Unsplash authors.
- * These are NOT Dapur Ummi Kyana merchandise photography. The label is always visible.
- * Never assume a similarly named menu matches an external photograph.
- * Owner-uploaded HTTPS image_url is the highest priority and suppresses this fallback.
+ * Product media precedence:
+ * 1) owner-managed verified HTTPS URL (when the store DB is configured)
+ * 2) an image actually referenced by the original index.php menu card
+ * 3) a clearly labeled generic dish illustration
  *
- * Unsplash License: https://unsplash.com/license
- * Photo credits in web/PHOTO_CREDITS.md.
+ * No photos of unrelated third-party menu items, no false merchant claims.
  */
-const editorialPhotography: Record<string, {url:string;credit:string}> = {
- 'nasi-ayam-bakar':{
-  url:'https://images.unsplash.com/photo-1666239308046-ead0314ee0fe?auto=format&fit=crop&w=900&q=78',
-  credit:'Mufid Majnun'
- },
- 'nasi-ayam-geprek':{
-  url:'https://images.unsplash.com/photo-1696340034876-6245523babfa?auto=format&fit=crop&w=900&q=78',
-  credit:'Bayu Syaits'
- },
- 'nasi-ayam-goreng-lengkuas':{
-  url:'https://images.unsplash.com/photo-1698309377471-54a87740d979?auto=format&fit=crop&w=900&q=78',
-  credit:'Budi Puspa Wijaya'
- }
-};
-
 export default function ProductVisual({product,hero=false,compact=false}:{product:Product;hero?:boolean;compact?:boolean}) {
- const verifiedUrl=typeof product.image_url==='string'&&/^https:\/\//i.test(product.image_url)
-  ?product.image_url:null;
- const stock=verifiedUrl?null:editorialPhotography[product.slug];
- const url=verifiedUrl||stock?.url;
+ const merchantUrl=typeof product.image_url==='string'&&/^https:\/\//i.test(product.image_url)?product.image_url:null;
+ const historicalUrl=merchantUrl?null:archiveMenuPhotos[product.slug];
+ const url=merchantUrl||historicalUrl;
  return <div className={'market-visual '+(hero?'market-visual--hero ':'')+(compact?'market-visual--compact ':'')+'market-visual--'+product.accent}>
-  {url ? <>
-    <img className={'market-product-photo '+(stock?'market-product-photo--illustrative':'')} src={url}
-      alt={verifiedUrl?'Foto '+product.name+' milik Dapur Ummi Kyana':'Foto ilustrasi hidangan sejenis; bukan foto produk aktual '+product.name}
-      loading={hero?'eager':'lazy'} decoding="async" referrerPolicy="no-referrer"/>
-    {stock&&<span className="market-illustration-label market-illustration-label--photo" title={'Fotografi editorial: '+stock.credit+' / Unsplash'}>Foto ilustrasi</span>}
-  </>:<><FoodArt product={product} compact={compact}/><span className="market-illustration-label">Ilustrasi menu</span></>}
+   {url ? <>
+     {historicalUrl
+       ? <Image className="market-product-photo market-product-photo--archived" src={historicalUrl}
+           alt={'Foto arsip menu '+product.name+' dari website Dapur Ummi Kyana terdahulu'}
+           fill sizes={hero?'(max-width: 700px) 90vw, 520px':compact?'90px':'(max-width: 700px) 48vw, 300px'}
+           priority={hero} quality={78}/>
+       : <img className="market-product-photo" src={merchantUrl!} alt={'Foto '+product.name}
+           loading={hero?'eager':'lazy'} decoding="async" referrerPolicy="no-referrer"/>}
+     {historicalUrl&&<span className="market-illustration-label market-illustration-label--photo">Foto arsip situs lama</span>}
+   </> : <>
+     <FoodArt product={product} compact={compact}/>
+     <span className="market-illustration-label">Ilustrasi menu</span>
+   </>}
  </div>;
 }
