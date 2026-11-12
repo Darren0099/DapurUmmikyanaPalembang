@@ -1,4 +1,17 @@
-# Dapur Ummi Kyana — Website Pemesanan & Admin UMKM Kuliner
+# Dapur Ummi Kyana — Modern E-Commerce v2
+
+**Versi modern (Next.js 16, React 19, TypeScript, Supabase-ready, Vercel) tersedia di folder [\`web/\`](web/).** Kode PHP/MySQL lama tetap dipertahankan untuk arsip dan migrasi data.
+
+- [Dokumentasi aplikasi modern](web/README.md)
+- [Audit sistem lama dan keputusan arsitektur](MODERNIZATION_AUDIT.md)
+- [SQL schema Supabase](web/supabase/schema.sql)
+
+> Status pembayaran: **belum terintegrasi DANA secara resmi**. Checkout database memerlukan project Supabase khusus. Tanpa kredensial, storefront berada dalam mode preview data historis dan mendukung konfirmasi melalui WhatsApp. Jangan memproses transaksi real menggunakan QR simulasi dari versi PHP.
+
+---
+
+## Sistem lama (arsip)
+
 
 Pengembangan sistem web untuk usaha kuliner **Dapur Ummi Kyana Palembang**. Berbeda dengan landing page promosi, repository ini memuat alur pengguna dan modul administrasi untuk pengelolaan pemesanan.
 
