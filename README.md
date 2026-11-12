@@ -4,6 +4,8 @@
 
 - [Dokumentasi aplikasi modern](web/README.md)
 - [Audit sistem lama dan keputusan arsitektur](MODERNIZATION_AUDIT.md)
+- [Audit konten dan seluruh modul PHP lama (terperinci)](LEGACY_CONTENT_AUDIT.md)
+- [Layanan dengan halaman masing-masing](web/app/layanan)
 - [SQL schema Supabase](web/supabase/schema.sql)
 
 > Status pembayaran: **Midtrans QRIS memiliki bukti riwayat transaksi merchant pada Januari 2025, tetapi API Midtrans belum terhubung ke versi modern**. DANA QR pada PHP lama adalah simulasi. Checkout database memerlukan project Supabase khusus. Tanpa kredensial, storefront berada dalam mode preview data historis dan mendukung konfirmasi melalui WhatsApp. Jangan memproses transaksi real menggunakan QR simulasi dari versi PHP.

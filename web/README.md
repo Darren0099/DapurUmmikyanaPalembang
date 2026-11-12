@@ -64,3 +64,10 @@ Before real transactions: provision separate Supabase project, verify business m
 - No independent bakery / bread product page exists in the available original repository.
 - **Original product photos are not in Git history:** `index.php` references `assets/images/*`, but the repository never included that directory. Do NOT swap in unrelated stock/generated product images. Request the actual originals from the merchant before activating the gallery or photo-based product cards.
 - The old free-delivery promotion and testimonials are not treated as current commercial claims until confirmed.
+
+## Dedicated legacy service pages & accessibility
+
+- `/layanan` and `/layanan/daily-catering`, `/layanan/snack-box`, `/layanan/tumpeng-mini`, `/layanan/prasmanan-gubukan` are public server-rendered pages.
+- Service cards have lightweight CSS transform/opacity effects and `prefers-reduced-motion` support. No heavy animation framework is required.
+- Every archival price, minimum order and old delivery offer is labelled non-current; WhatsApp inquiries are not payment checkout.
+- See `../LEGACY_CONTENT_AUDIT.md` for detailed file-by-file comparison, historical broken links, and security review.
