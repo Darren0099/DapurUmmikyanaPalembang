@@ -329,3 +329,27 @@
  .market-editorial-pick-image .food-plate,.market-gallery-image .food-plate,
  .market-shortcut-card{transition:none!important}
 }
+
+/* Editorial real-photography references: explicitly illustrative, not vendor media. */
+.market-visual .market-product-photo--illustrative{filter:saturate(.92) contrast(1.03);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.market-product-card:hover .market-product-photo--illustrative{transform:scale(1.045)}
+.market-product-card-visual .market-product-photo--illustrative{object-fit:cover}
+.market-visual--hero .market-product-photo--illustrative{
+ width:91%;height:85%;object-fit:cover;border-radius:28px;
+ box-shadow:0 30px 45px rgba(83,48,23,.22);transform:rotate(-7deg)
+}
+.market-hero-product .market-visual--hero .market-product-photo--illustrative{max-height:400px}
+.market-hero-product:hover .market-product-photo--illustrative{transform:rotate(-5deg) scale(1.025)}
+.market-editorial-pick-image .market-product-photo--illustrative{border-radius:24px;object-fit:cover;box-shadow:0 20px 45px rgba(83,48,23,.25)}
+.market-editorial-pick:hover .market-product-photo--illustrative{transform:scale(1.04) rotate(-1deg)}
+.market-story-dish .market-product-photo--illustrative{border-radius:26px;box-shadow:0 24px 36px rgba(85,49,25,.22)}
+.market-gallery-image .market-product-photo--illustrative{object-fit:cover;border-radius:0;box-shadow:none}
+.market-illustration-label--photo{right:14px;left:auto!important;bottom:12px!important;background:rgba(255,252,245,.94)!important;color:#895a3d!important}
+.market-visual--compact .market-illustration-label--photo{display:none}
+.service-photo-stage{position:relative;margin:22px 0 16px;width:100%;height:114px;overflow:hidden;border-radius:15px;background:#f1dfc5}
+.service-photo-stage img{width:100%;height:100%;object-fit:cover;display:block}
+.service-photo-stage span{position:absolute;right:7px;bottom:7px;border-radius:14px;background:#fff9edeb;
+ color:#986840;padding:4px 7px;font-size:9px;font-weight:700}
+.market-service-section .service-card--enhanced:has(.service-photo-stage) .service-icon-stage{display:none}
+@media(prefers-reduced-motion:reduce){.market-product-card:hover .market-product-photo--illustrative,
+.market-hero-product:hover .market-product-photo--illustrative,.market-editorial-pick:hover .market-product-photo--illustrative{transform:none!important}}

@@ -32,8 +32,12 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
   const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
   const featured = useMemo(()=>{
-    const highlighted = products.filter(p=>p.featured);
-    return (highlighted.length ? highlighted : products).slice(0,4);
+    // First carousel slide shows a historically listed dish with a matching
+    // illustrative photograph. Real merchant imagery always takes priority.
+    const priority=['nasi-ayam-bakar','nasi-ayam-geprek','nasi-ayam-goreng-lengkuas'];
+    const selected=priority.map(slug=>products.find(p=>p.slug===slug)).filter((p):p is Product=>Boolean(p));
+    const extras=products.filter(p=>p.featured&&!selected.some(x=>x.slug===p.slug));
+    return [...selected,...extras,...products].filter((p,index,all)=>all.findIndex(item=>item.slug===p.slug)===index).slice(0,4);
   },[products]);
   const current = featured[active%Math.max(1,featured.length)] || products[0];
   const filtered = useMemo(()=>
