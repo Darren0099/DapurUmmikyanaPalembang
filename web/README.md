@@ -79,3 +79,9 @@ Before real transactions: provision separate Supabase project, verify business m
 - Products can display **verified HTTPS original food photos** through `products.image_url`; when unavailable, labelled SVG food illustrations remain. The protected admin product editor can add or update the photo URL. Storefront does not claim third-party reference photography as merchant products.
 - `web/supabase/schema.sql` includes an additive `image_url` column, and `web/lib/catalog.ts` fetches it. If a dedicated store database was already initialized with the earlier schema, apply the additive SQL ALTER first.
 - No fake discounts, sold-out statuses, ratings, or unverified free shipping assertions. Historical prices stay explicitly labelled.
+
+## Warm editorial frontend v4 (2026-11-12)
+- Design revamp uses saffron/yellow cards, warm paper-textured hero, food-first video-inspired carousel, six clickable category shortcuts, two featured menu cards, a gallery, service cards, authentic-texture typography, and responsive reduced-motion CSS.
+- Four temporary documentary food photographs from Unsplash have appropriate author/source attribution in `PHOTO_CREDITS.md` and visible 'Foto ilustrasi' overlays. They are **not the vendor's products**, do not show fabricated ratings or discounts, and never override a provided `image_url`.
+- High-resolution *AI-generated* editorial food asset pack was prepared separately for an optional later content pass; it is **not in the Git repository yet**, to avoid falsely implying that generated food photos depict real dishes sold by the merchant. A merchant photo verification pass is still needed.
+- PHP legacy sources and current Supabase/Midtrans payment restrictions remain unchanged. Backend remains preview-only until database credentials and payment webhooks are tested.
