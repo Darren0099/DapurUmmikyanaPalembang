@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight,
@@ -31,6 +31,8 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const paused = hoverPaused || manualPaused;
   const [testimonial, setTestimonial] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [pageVisible, setPageVisible] = useState(true);
+  const touchStartX = useRef<number|null>(null);
 
   const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
   const featured = useMemo(()=>{
@@ -57,12 +59,53 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     : 'Halo Dapur Ummi Kyana, saya ingin bertanya tentang menu dan pemesanan.';
 
   useEffect(()=>{
-    if(paused || featured.length<2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const updateVisibility=()=>setPageVisible(document.visibilityState==='visible');
+    document.addEventListener('visibilitychange',updateVisibility);
+    return ()=>document.removeEventListener('visibilitychange',updateVisibility);
+  },[]);
+
+  useEffect(()=>{
+    if(paused || !pageVisible || featured.length<2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const interval = window.setInterval(()=>setActive(index=>(index+1)%featured.length),6200);
     return ()=>window.clearInterval(interval);
-  },[featured.length,paused]);
+  },[featured.length,paused,pageVisible]);
+
+  // No-JS and reduced-motion visitors see every section normally.
+  useEffect(()=>{
+    if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const targets=Array.from(document.querySelectorAll<HTMLElement>('.market-root [data-market-reveal]'));
+    const observer=new IntersectionObserver(entries=>{
+      for(const entry of entries) if(entry.isIntersecting){
+        (entry.target as HTMLElement).dataset.marketVisible='true';
+        observer.unobserve(entry.target);
+      }
+    },{threshold:0.08,rootMargin:'0px 0px -24px 0px'});
+    for(const el of targets){
+      if(el.getBoundingClientRect().top>window.innerHeight*0.92){
+        el.dataset.marketVisible='false';
+        observer.observe(el);
+      }else{el.dataset.marketVisible='true';}
+    }
+    return ()=>observer.disconnect();
+  },[]);
+
+  useEffect(()=>{
+    if(!drawer)return;
+    const previous=document.body.style.overflow;
+    document.body.style.overflow='hidden';
+    const onKey=(e:KeyboardEvent)=>{if(e.key==='Escape')setDrawer(false);};
+    window.addEventListener('keydown',onKey);
+    return ()=>{document.body.style.overflow=previous;window.removeEventListener('keydown',onKey);};
+  },[drawer]);
 
   const changeSlide = (direction:number) => {if(featured.length<2)return;setActive(index=>(index+direction+featured.length)%featured.length);};
+  const onHeroTouchEnd=(event:import('react').TouchEvent<HTMLElement>)=>{
+    const start=touchStartX.current;
+    touchStartX.current=null;
+    if(start===null)return;
+    const delta=event.changedTouches[0].clientX-start;
+    if(Math.abs(delta)>55)changeSlide(delta<0?1:-1);
+  };
   const addToCart = (slug:string) => { cart.add(slug); setDrawer(true); };
 
   return <div className="market-root">
@@ -87,7 +130,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </div></header>
 
     <main>
-      <section id="beranda" className="market-hero" onMouseEnter={()=>setHoverPaused(true)} onMouseLeave={()=>setHoverPaused(false)} onFocusCapture={()=>setHoverPaused(true)} onBlurCapture={()=>setHoverPaused(false)}>
+      <section id="beranda" className="market-hero" onTouchStart={e=>{touchStartX.current=e.touches[0].clientX;}} onTouchEnd={onHeroTouchEnd} onMouseEnter={()=>setHoverPaused(true)} onMouseLeave={()=>setHoverPaused(false)} onFocusCapture={()=>setHoverPaused(true)} onBlurCapture={()=>setHoverPaused(false)}>
         <div className="container market-hero-grid">
           <div className="market-hero-copy">
             <span className="market-eyebrow"><span className="market-eyebrow-dot"/> HOMEMADE FROM PALEMBANG</span>
@@ -108,10 +151,10 @@ export default function Storefront({products, live}:{products:Product[];live:boo
             <div className="market-hero-stage">
               <div className="market-hero-disc" aria-hidden="true"/>
               <div className="market-hero-sticker"><span>PILIHAN</span><strong>{String(active+1).padStart(2,'0')}</strong><small>/ {String(featured.length).padStart(2,'0')}</small></div>
-              {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero/></div>}
+              {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero priority/></div>}
               <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Lihat harga dan stok pada katalog':'Harga merupakan referensi arsip; konfirmasi ke penjual'}</small></div>
               <div className="market-hero-stage-note" aria-hidden="true">HOME-COOKED FOOD · PALEMBANG</div>
-              <span className="market-hero-orbit-label" aria-hidden="true">MADE WITH CARE</span>
+              <span className="market-hero-orbit-label" aria-hidden="true">MADE WITH CARE</span><span className="market-orbit-flourish" aria-hidden="true"/>
             </div>
             <div id="favorit" className="market-hero-carousel-controls">
               <div className="market-featured-thumbs" aria-label="Pilih hidangan unggulan">
@@ -119,14 +162,17 @@ export default function Storefront({products, live}:{products:Product[];live:boo
                   <ProductVisual product={item} compact/><span>{item.name}</span>
                 </button>)}
               </div>
-              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setManualPaused(value=>!value)} type="button" aria-label={manualPaused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
+              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setManualPaused(value=>!value)} type="button" aria-pressed={manualPaused} aria-label={manualPaused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
+            </div>
+            <div className="market-carousel-progress" aria-hidden="true">
+              <span key={current?.slug||'menu'} className="market-carousel-progress-fill" data-play={!paused&&pageVisible&&featured.length>1}/>
             </div>
           </div>
         </div>
         <div className="market-hero-ground" aria-hidden="true"/>
       </section>
 
-      <section className="market-quick-categories" aria-label="Jelajahi kategori">
+      <section className="market-quick-categories" data-market-reveal aria-label="Jelajahi kategori">
         <div className="container market-shortcut-grid">
           {[
             {name:'Semua menu',label:'Jelajahi pilihan',icon:UtensilsCrossed,cat:'Semua'},
@@ -158,14 +204,14 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       </section>
       <div className="market-ticker"><div className="container market-ticker-inner"><span><Leaf size={18}/> Menu rumahan</span><i/><span><UtensilsCrossed size={18}/> Rasa Nusantara</span><i/><span><Truck size={18}/> Tanya jadwal pengiriman</span><i/><span><HeartHandshake size={18}/> Catering & acara</span></div></div>
 
-      <section className="market-catalog-section" id="menu"><div className="container">
+      <section className="market-catalog-section" data-market-reveal id="menu"><div className="container">
         <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi hidangan dari katalog Dapur Ummi Kyana. Pilih yang kamu suka, simpan ke keranjang, dan konfirmasi pemesanan.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
         {!live&&<div className="market-menu-note"><Check size={18}/><p><strong>Pratinjau katalog lama.</strong> Harga merupakan referensi historis, bukan penawaran aktif. Konfirmasikan harga dan ketersediaan sebelum membeli. Foto asli produk masih dalam proses pemulihan.</p></div>}
         <div className="market-product-toolbar">
           <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
           <label className="market-search"><Search size={17}/><input type="search" placeholder="Cari hidangan..." aria-label="Cari menu makanan" value={search} onChange={event=>{setSearch(event.target.value);setShowAll(false)}}/></label>
         </div>
-        <div className="market-product-grid">{visible.map((product,index)=><article key={product.slug} className="market-product-card" style={{animationDelay:(Math.min(index,7)*55)+'ms'}}>
+        <div className="market-product-grid">{visible.map((product,index)=><article key={product.slug} className="market-product-card" data-market-reveal style={{animationDelay:(Math.min(index,7)*55)+'ms'}}>
           <div className="market-product-card-visual"><ProductVisual product={product}/>{product.featured&&<span className="market-product-flag">Pilihan dapur</span>}<button type="button" aria-label={'Tambah '+product.name+' ke keranjang'} title={'Tambah '+product.name} className="market-product-add" onClick={()=>addToCart(product.slug)}><ShoppingBag size={18}/></button></div>
           <div className="market-product-details"><span className="market-product-category">{product.category}</span><h3>{product.name}</h3><p>{product.description}</p><div className="market-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>addToCart(product.slug)}>Tambah <Plus size={16}/></button></div></div>
         </article>)}</div>
@@ -173,18 +219,18 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         {filtered.length>8&&<div className="market-view-all"><button type="button" onClick={()=>setShowAll(!showAll)}>{showAll?'Tampilkan lebih sedikit':'Lihat semua '+filtered.length+' menu'} <ChevronDown className={showAll?'market-chevron-up':''} size={17}/></button></div>}
       </div></section>
 
-      <section className="market-offer-section"><div className="container market-offer-grid">
+      <section className="market-offer-section" data-market-reveal><div className="container market-offer-grid">
         <div className="market-offer-copy"><span className="market-eyebrow">DARI DAPUR UNTUK ACARA KAMU</span><h2>Ada acara? <em>Biar kami yang siapkan.</em></h2><p>Dari snack box hingga tumpeng mini dan prasmanan, temukan pilihan layanan dari arsip Dapur Ummi Kyana. Tanyakan paket, kapasitas, dan harga terkini.</p><Link href="/layanan" className="market-button market-button--primary">Eksplor paket catering <ArrowUpRight size={17}/></Link><div className="market-offer-note">Pilihan dan harga perlu konfirmasi penjual.</div></div>
         <div className="market-offer-art"><span className="market-offer-round" aria-hidden="true"/><div className="market-offer-platter">{current&&<ProductVisual product={current} hero/>}</div><span className="market-offer-stamp">DARI DAPUR<br/>UNTUK ACARA</span><span className="market-offer-decoration" aria-hidden="true"/></div>
       </div></section>
 
-      <section id="paket" className="market-service-section"><div className="container">
+      <section id="paket" className="market-service-section" data-market-reveal><div className="container">
         <div className="market-section-head"><div><span className="market-eyebrow">PILIHAN PAKET</span><h2>Setiap momen punya <em>ceritanya.</em></h2><p>Jelajahi empat layanan dari website pertama kami, kini dengan halaman detail masing-masing.</p></div><span className="market-section-number">02 / OUR SERVICES</span></div>
         <ServiceCards compact/>
         <div className="market-all-services"><Link href="/layanan">Selengkapnya tentang layanan <ArrowRight size={17}/></Link></div>
       </div></section>
 
-      <section className="market-gallery-section" id="galeri"><div className="container">
+      <section className="market-gallery-section" data-market-reveal id="galeri"><div className="container">
         <div className="market-section-head"><div><span className="market-eyebrow">CERITA DI BALIK SETIAP SAJIAN</span><h2>Lebih dekat dengan <em>hidangan kami.</em></h2>
           <p>Area galeri menampilkan konsep fotografi makanan editorial. Foto produk asli dari Dapur Ummi Kyana akan menggantikan gambar konsep setelah tersedia.</p></div><span className="market-section-number">03 / FOOD JOURNAL</span></div>
         <div className="market-gallery-grid">
@@ -199,10 +245,10 @@ export default function Storefront({products, live}:{products:Product[];live:boo
             <div className="market-gallery-caption"><span>0{index+1} / {item.cat}</span><h3>{item.name}</h3><p>{item.desc}</p></div>
           </article>)}
         </div>
-        <div className="market-gallery-bottom"><span>Foto asli akan ditambahkan setelah tersedia dari pengelola usaha.</span><button type="button" onClick={()=>setGalleryIndex(n=>(n+1)%Math.max(1,products.length))}>Ganti pilihan visual <ArrowRight size={16}/></button></div>
+        <div className="market-gallery-bottom"><span>Foto asli dari arsip akan dipulihkan setelah ZIP lengkap berhasil diperiksa. Gambar saat ini bersifat ilustratif.</span><button type="button" onClick={()=>setGalleryIndex(n=>(n+1)%Math.max(1,products.length))}>Ganti pilihan visual <ArrowRight size={16}/></button></div>
       </div></section>
 
-      <section id="tentang" className="market-story-section"><div className="container market-story-grid">
+      <section id="tentang" className="market-story-section" data-market-reveal><div className="container market-story-grid">
         <div className="market-story-visual"><div className="market-story-shape" aria-hidden="true"/><div className="market-story-dish">{current&&<ProductVisual product={current} hero/>}</div><span className="market-story-signature">Hangat dari dapur kami.</span><div className="market-story-vertical">D A P U R &nbsp; U M M I &nbsp; K Y A N A</div></div>
         <div className="market-story-copy"><span className="market-eyebrow">CERITA DI BALIK DAPUR</span><h2>Lebih dari makanan. <em>Ini tentang rasa pulang.</em></h2><p>Dapur Ummi Kyana berawal dari pilihan hidangan rumahan di Palembang. Mulai dari nasi box untuk keseharian hingga menu untuk berbagai kesempatan, setiap hidangan menyimpan cerita di meja makan.</p><div className="market-story-features">
           <div><span className="market-story-icon"><Leaf size={19}/></span><div><strong>Aneka hidangan Nusantara</strong><small>Menu nasi, ayam, seafood, dan pilihan acara.</small></div></div>
@@ -211,16 +257,16 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         </div><Link className="market-story-link" href="/layanan">Kenali layanan kami <ArrowUpRight size={17}/></Link></div>
       </div></section>
 
-      <section className="market-voice-section"><div className="container market-voice-grid">
+      <section className="market-voice-section" data-market-reveal><div className="container market-voice-grid">
         <div><span className="market-eyebrow">ARSIP WEBSITE PERTAMA</span><h2>Kalimat yang <em>pernah ditinggalkan.</em></h2><p>Cuplikan testimoni tercantum dalam sumber website lama. Identitas dan ulasan ini belum diverifikasi ulang, jadi ditampilkan sebagai arsip, bukan rating aktif.</p></div>
         <div className="market-voice-card"><span className="market-quote-mark" aria-hidden="true">“</span><blockquote>{archiveQuotes[testimonial]}</blockquote><div className="market-voice-bottom"><span>Arsip testimoni · Dapur Ummi Kyana</span><div><button type="button" aria-label="Lihat testimoni sebelumnya" onClick={()=>setTestimonial(index=>(index-1+archiveQuotes.length)%archiveQuotes.length)}><ArrowLeft size={17}/></button><button type="button" aria-label="Lihat testimoni berikutnya" onClick={()=>setTestimonial(index=>(index+1)%archiveQuotes.length)}><ArrowRight size={17}/></button></div></div></div>
       </div></section>
 
-      <section id="cara-pesan" className="market-how-section"><div className="container"><div className="market-section-head market-section-head--center"><div><span className="market-eyebrow">PEMESANAN LEBIH MUDAH</span><h2>Dari pilihan, <em>jadi pesanan.</em></h2><p>Tiga langkah sederhana untuk menghubungi Dapur Ummi Kyana.</p></div></div>
+      <section id="cara-pesan" className="market-how-section" data-market-reveal><div className="container"><div className="market-section-head market-section-head--center"><div><span className="market-eyebrow">PEMESANAN LEBIH MUDAH</span><h2>Dari pilihan, <em>jadi pesanan.</em></h2><p>Tiga langkah sederhana untuk menghubungi Dapur Ummi Kyana.</p></div></div>
       <div className="market-how-grid"><div><span>01</span><ShoppingBag size={28}/><h3>Pilih menu favorit</h3><p>Jelajahi hidangan dan masukkan pilihan ke keranjang.</p></div><div><span>02</span><HeartHandshake size={28}/><h3>Konfirmasi pesanan</h3><p>Hubungi penjual untuk memastikan stok, harga, dan kebutuhan acara.</p></div><div><span>03</span><Clock3 size={28}/><h3>Tentukan pembayaran</h3><p>Ikuti informasi pembayaran resmi dari pengelola. Pembayaran otomatis belum diaktifkan.</p></div></div>
       </div></section>
 
-      <section className="market-final-cta"><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Hubungi kami untuk mengetahui menu yang tersedia hari ini.</p></div><a className="market-button market-button--cream" href={whatsappUrl(whatsAppMessage)} target="_blank" rel="noopener noreferrer">Tanya & pesan sekarang <ArrowUpRight size={19}/></a></div></section>
+      <section className="market-final-cta" data-market-reveal><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Hubungi kami untuk mengetahui menu yang tersedia hari ini.</p></div><a className="market-button market-button--cream" href={whatsappUrl(whatsAppMessage)} target="_blank" rel="noopener noreferrer">Tanya & pesan sekarang <ArrowUpRight size={19}/></a></div></section>
     </main>
 
     <footer className="market-footer"><div className="container">

@@ -85,3 +85,12 @@ Before real transactions: provision separate Supabase project, verify business m
 - Four temporary documentary food photographs from Unsplash have appropriate author/source attribution in `PHOTO_CREDITS.md` and visible 'Foto ilustrasi' overlays. They are **not the vendor's products**, do not show fabricated ratings or discounts, and never override a provided `image_url`.
 - High-resolution *AI-generated* editorial food asset pack was prepared separately for an optional later content pass; it is **not in the Git repository yet**, to avoid falsely implying that generated food photos depict real dishes sold by the merchant. A merchant photo verification pass is still needed.
 - PHP legacy sources and current Supabase/Midtrans payment restrictions remain unchanged. Backend remains preview-only until database credentials and payment webhooks are tested.
+
+## Animation and archived media follow-up (2026-11-12)
+
+- Respect the owner's first-reference editorial direction: food photography, airy cream/amber cards, readable menu and restrained motion.
+- Hero carousel pauses for mouse/keyboard interaction, on manually selected pause, in background tabs, or with reduced-motion setting. Small-screen swipe navigation and a subtle progress indicator are available.
+- Scroll-reveal uses native IntersectionObserver and CSS opacity/translate (no heavy animation package). If JavaScript is disabled or reduced-motion is requested, all content remains visible.
+- Cart locks background scrolling and closes with Escape; keep the legacy PHP and payment systems untouched.
+- The newly discovered 2025 Google Drive source archive **ecommerce.zip** is approximately **270,504,353 bytes**. The connected Drive download exceeds its 256 MiB per-file limit (268,435,456 bytes); a direct fallback network download was not available in the execution environment. The archive is **not inspected yet**; do not claim it contains specific food photos, payment API config, or confirmed final application files until extracted.
+- To reconcile the original archive: provide it in smaller ZIP chunks or extract and upload `assets/images`, food photography, distinct service page folders, SQL schema, plus the original PHP source. Avoid uploading `vendor`, `node_modules`, caches or secrets. Do not expose payment API keys in the public repository.

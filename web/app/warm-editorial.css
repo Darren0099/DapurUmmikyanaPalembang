@@ -353,3 +353,70 @@
 .market-service-section .service-card--enhanced:has(.service-photo-stage) .service-icon-stage{display:none}
 @media(prefers-reduced-motion:reduce){.market-product-card:hover .market-product-photo--illustrative,
 .market-hero-product:hover .market-product-photo--illustrative,.market-editorial-pick:hover .market-product-photo--illustrative{transform:none!important}}
+
+/* Motion refinement: progressive scroll reveals without an animation library.
+   Visibility stays intact without JavaScript, on old browsers, or for reduced motion. */
+.market-root [data-market-reveal][data-market-visible="false"] {
+  opacity:0;
+  transform:translateY(26px);
+}
+.market-root [data-market-reveal][data-market-visible="true"] {
+  opacity:1;
+  transform:translateY(0);
+}
+.market-root [data-market-reveal] {
+  transition:opacity .68s cubic-bezier(.22,1,.36,1),transform .68s cubic-bezier(.22,1,.36,1);
+}
+.market-root .market-product-card[data-market-reveal] {
+  transition:opacity .63s cubic-bezier(.22,1,.36,1),
+    transform .5s cubic-bezier(.22,1,.36,1),
+    box-shadow .28s ease,border-color .28s ease;
+}
+.market-root .market-product-card[data-market-visible="true"]:hover {
+  transform:translateY(-7px);
+}
+.market-hero .market-carousel-progress {
+  height:3px;
+  overflow:hidden;
+  margin:17px 0 0;
+  background:rgba(123,87,55,.12);
+  border-radius:8px;
+}
+.market-hero .market-carousel-progress-fill {
+  display:block;
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,#a45e31,#e8ae5d);
+  transform:scaleX(0);
+  transform-origin:left;
+  animation:marketSlideProgress 6.2s linear forwards;
+}
+.market-hero .market-carousel-progress-fill[data-play="false"] {
+  animation-play-state:paused;
+}
+.market-hero .market-orbit-flourish{
+  position:absolute;top:0;right:13%;width:65px;height:65px;
+  z-index:1;border:1px dashed rgba(132,93,49,.38);
+  border-radius:50%;pointer-events:none;
+  animation:marketFloatDrift 7.5s ease-in-out infinite;
+}
+.market-hero .market-orbit-flourish::after{
+  content:"";position:absolute;width:7px;height:7px;background:#ad7043;
+  border-radius:50%;top:-4px;left:28px;
+}
+@keyframes marketSlideProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes marketFloatDrift{0%,100%{transform:translateY(0) rotate(-11deg)}50%{transform:translateY(13px) rotate(9deg)}}
+@media(max-width:640px){
+  .market-hero .market-carousel-progress{margin-top:8px;}
+  .market-hero .market-orbit-flourish{width:38px;height:38px;right:10%;top:18px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .market-root [data-market-reveal],
+  .market-root [data-market-reveal][data-market-visible="false"],
+  .market-root [data-market-reveal][data-market-visible="true"] {
+    opacity:1!important;transform:none!important;transition:none!important;
+  }
+  .market-hero .market-orbit-flourish,
+  .market-hero .market-carousel-progress-fill{animation:none!important;}
+  .market-hero .market-carousel-progress-fill{transform:scaleX(1)!important;}
+}

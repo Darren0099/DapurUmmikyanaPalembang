@@ -25,7 +25,7 @@ const editorialPhotography: Record<string, {url:string;credit:string}> = {
  }
 };
 
-export default function ProductVisual({product,hero=false,compact=false}:{product:Product;hero?:boolean;compact?:boolean}) {
+export default function ProductVisual({product,hero=false,compact=false,priority=false}:{product:Product;hero?:boolean;compact?:boolean;priority?:boolean}) {
  const verifiedUrl=typeof product.image_url==='string'&&/^https:\/\//i.test(product.image_url)
   ?product.image_url:null;
  const stock=verifiedUrl?null:editorialPhotography[product.slug];
@@ -34,7 +34,7 @@ export default function ProductVisual({product,hero=false,compact=false}:{produc
   {url ? <>
     <img className={'market-product-photo '+(stock?'market-product-photo--illustrative':'')} src={url}
       alt={verifiedUrl?'Foto '+product.name+' milik Dapur Ummi Kyana':'Foto ilustrasi hidangan sejenis; bukan foto produk aktual '+product.name}
-      loading={hero?'eager':'lazy'} decoding="async" referrerPolicy="no-referrer"/>
+      loading={priority?'eager':'lazy'} fetchPriority={priority?'high':'auto'} decoding="async" referrerPolicy="no-referrer"/>
     {stock&&<span className="market-illustration-label market-illustration-label--photo" title={'Fotografi editorial: '+stock.credit+' / Unsplash'}>Foto ilustrasi</span>}
   </>:<><FoodArt product={product} compact={compact}/><span className="market-illustration-label">Ilustrasi menu</span></>}
  </div>;
