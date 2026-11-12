@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { archiveFeatures } from '@/lib/archive-media';
 import {
   ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight,
   Clock3, HeartHandshake, Leaf, MapPin, Menu, Minus, Plus, Search,
@@ -31,6 +33,11 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const paused = hoverPaused || manualPaused;
   const [testimonial, setTestimonial] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const archivedGallery = [
+    {src:archiveFeatures.nasiBritani,name:'Nasi Britani',desc:'Dari halaman bestseller tahun 2025',cat:'MENU',alt:'Foto arsip Nasi Britani dari website lama'},
+    {src:archiveFeatures.tumpeng,name:'Tumpeng Mini',desc:'Dokumentasi katalog paket tumpeng',cat:'CATERING',alt:'Foto arsip tumpeng mini dari halaman layanan lama'},
+    {src:archiveFeatures.gubukan,name:'Prasmanan & Gubukan',desc:'Visual arsip layanan acara',cat:'ACARA',alt:'Foto arsip layanan gubukan dari situs lama'},
+  ];
 
   const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
   const featured = useMemo(()=>{
@@ -69,7 +76,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     <div className="market-topline"><div className="container market-topline-content"><span><Sparkles size={13}/> Cita rasa rumahan dari Palembang</span><span><MapPin size={13}/> Palembang, Sumatera Selatan</span></div></div>
     <header className="market-header"><div className="container market-nav">
       <Link className="market-brand" href="/" aria-label="Dapur Ummi Kyana — beranda">
-        <span className="market-brand-mark"><UtensilsCrossed size={24} strokeWidth={1.8}/></span>
+        <span className="market-brand-mark market-brand-mark--archive"><Image src="/archive/brand/logo12.jpg" alt="" width={44} height={44} priority/></span>
         <span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span>
       </Link>
       <nav className={'market-links '+(mobileNav?'market-links--open':'')} aria-label="Navigasi utama">
@@ -111,7 +118,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
               {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero/></div>}
               <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Lihat harga dan stok pada katalog':'Harga merupakan referensi arsip; konfirmasi ke penjual'}</small></div>
               <div className="market-hero-stage-note" aria-hidden="true">HOME-COOKED FOOD · PALEMBANG</div>
-              <span className="market-hero-orbit-label" aria-hidden="true">MADE WITH CARE</span>
+              <span className="market-hero-orbit-label" aria-hidden="true">FROM OUR 2025 ARCHIVE</span>
             </div>
             <div id="favorit" className="market-hero-carousel-controls">
               <div className="market-featured-thumbs" aria-label="Pilih hidangan unggulan">
@@ -121,6 +128,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
               </div>
               {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setManualPaused(value=>!value)} type="button" aria-label={manualPaused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
             </div>
+          {featured.length > 1 && <div className="market-slide-progress" aria-hidden="true"><span key={active} style={{animationPlayState:paused?'paused':'running'}}/></div>}
           </div>
         </div>
         <div className="market-hero-ground" aria-hidden="true"/>
@@ -160,7 +168,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
       <section className="market-catalog-section" id="menu"><div className="container">
         <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi hidangan dari katalog Dapur Ummi Kyana. Pilih yang kamu suka, simpan ke keranjang, dan konfirmasi pemesanan.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
-        {!live&&<div className="market-menu-note"><Check size={18}/><p><strong>Pratinjau katalog lama.</strong> Harga merupakan referensi historis, bukan penawaran aktif. Konfirmasikan harga dan ketersediaan sebelum membeli. Foto asli produk masih dalam proses pemulihan.</p></div>}
+        {!live&&<div className="market-menu-note"><Check size={18}/><p><strong>Pratinjau katalog lama.</strong> Harga merupakan referensi historis, bukan penawaran aktif. Konfirmasikan harga dan ketersediaan sebelum membeli. Foto berasal dari aset website arsip 2025; menu, komposisi, dan harga terkini tetap perlu dikonfirmasi.</p></div>}
         <div className="market-product-toolbar">
           <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
           <label className="market-search"><Search size={17}/><input type="search" placeholder="Cari hidangan..." aria-label="Cari menu makanan" value={search} onChange={event=>{setSearch(event.target.value);setShowAll(false)}}/></label>
@@ -175,7 +183,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
       <section className="market-offer-section"><div className="container market-offer-grid">
         <div className="market-offer-copy"><span className="market-eyebrow">DARI DAPUR UNTUK ACARA KAMU</span><h2>Ada acara? <em>Biar kami yang siapkan.</em></h2><p>Dari snack box hingga tumpeng mini dan prasmanan, temukan pilihan layanan dari arsip Dapur Ummi Kyana. Tanyakan paket, kapasitas, dan harga terkini.</p><Link href="/layanan" className="market-button market-button--primary">Eksplor paket catering <ArrowUpRight size={17}/></Link><div className="market-offer-note">Pilihan dan harga perlu konfirmasi penjual.</div></div>
-        <div className="market-offer-art"><span className="market-offer-round" aria-hidden="true"/><div className="market-offer-platter">{current&&<ProductVisual product={current} hero/>}</div><span className="market-offer-stamp">DARI DAPUR<br/>UNTUK ACARA</span><span className="market-offer-decoration" aria-hidden="true"/></div>
+        <div className="market-offer-art"><span className="market-offer-round" aria-hidden="true"/><div className="market-offer-platter"><Image src={archiveFeatures.tumpeng} alt="Foto arsip tumpeng mini dari website catering lama" fill sizes="(max-width: 860px) 100vw, 45vw" quality={78}/></div><span className="market-offer-stamp">DARI DAPUR<br/>UNTUK ACARA</span><span className="market-offer-decoration" aria-hidden="true"/></div>
       </div></section>
 
       <section id="paket" className="market-service-section"><div className="container">
@@ -186,20 +194,20 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
       <section className="market-gallery-section" id="galeri"><div className="container">
         <div className="market-section-head"><div><span className="market-eyebrow">CERITA DI BALIK SETIAP SAJIAN</span><h2>Lebih dekat dengan <em>hidangan kami.</em></h2>
-          <p>Area galeri menampilkan konsep fotografi makanan editorial. Foto produk asli dari Dapur Ummi Kyana akan menggantikan gambar konsep setelah tersedia.</p></div><span className="market-section-number">03 / FOOD JOURNAL</span></div>
+          <p>Galeri ini memulihkan foto dan visual dari website Dapur Ummi Kyana versi 2025. Dokumentasi arsip tidak menjadi bukti harga atau paket yang masih berlaku saat ini.</p></div><span className="market-section-number">03 / FOOD JOURNAL</span></div>
         <div className="market-gallery-grid">
-          {[
-            {name:'Nasi Box',desc:'Menu untuk hari yang padat',cat:'Nasi Box'},
-            {name:'Hidangan Nusantara',desc:'Rempah, sambal, dan lauk pilihan',cat:'Nasi Pilihan'},
-            {name:'Pesanan acara',desc:'Dari snack box hingga katering',cat:'Catering'},
-          ].map((item,index)=><article className={'market-gallery-tile market-gallery-tile--'+index} key={item.name}>
-            <div className="market-gallery-image">
-              {products.length>0&&<ProductVisual product={products[(galleryIndex+index*2)%products.length]} hero/>}
-            </div>
-            <div className="market-gallery-caption"><span>0{index+1} / {item.cat}</span><h3>{item.name}</h3><p>{item.desc}</p></div>
-          </article>)}
+          {archivedGallery.map((_,index)=>{
+            const item=archivedGallery[(galleryIndex+index)%archivedGallery.length];
+            return <article className={'market-gallery-tile market-gallery-tile--'+index} key={item.src}>
+              <div className="market-gallery-image market-gallery-image--archive">
+                <Image src={item.src} alt={item.alt} fill sizes="(max-width: 700px) 100vw, 33vw" quality={78}/>
+                <span className="market-gallery-archive-stamp">FOTO ARSIP 2025</span>
+              </div>
+              <div className="market-gallery-caption"><span>0{index+1} / {item.cat}</span><h3>{item.name}</h3><p>{item.desc}</p></div>
+            </article>;
+          })}
         </div>
-        <div className="market-gallery-bottom"><span>Foto asli akan ditambahkan setelah tersedia dari pengelola usaha.</span><button type="button" onClick={()=>setGalleryIndex(n=>(n+1)%Math.max(1,products.length))}>Ganti pilihan visual <ArrowRight size={16}/></button></div>
+        <div className="market-gallery-bottom"><span>Sumber: folder gambar dari repository versi final 2025.</span><button type="button" onClick={()=>setGalleryIndex(n=>(n+1)%archivedGallery.length)}>Ganti pilihan visual <ArrowRight size={16}/></button></div>
       </div></section>
 
       <section id="tentang" className="market-story-section"><div className="container market-story-grid">
@@ -224,8 +232,8 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </main>
 
     <footer className="market-footer"><div className="container">
-      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark"><UtensilsCrossed size={22}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#galeri">Galeri</a><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
-      <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer" aria-label="Lisensi sumber foto ilustrasi">Foto ilustrasi: Unsplash</a></span></div>
+      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark market-brand-mark--archive"><Image src="/archive/brand/logo12.jpg" alt="" width={44} height={44}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#galeri">Galeri</a><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
+      <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · Fotografi situs lama, direstorasi dari arsip GitHub</span></div>
     </div></footer>
 
     {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}>

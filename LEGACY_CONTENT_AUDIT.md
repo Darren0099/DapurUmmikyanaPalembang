@@ -65,3 +65,15 @@ Panel admin modern `web/app/admin/page.tsx` sudah memiliki menu dashboard/pesana
 - Untuk tahap berikutnya: aset/foto asli dan harga aktif dari merchant, database toko, pengelolaan foto lewat storage, rekanan Midtrans beserta sandbox, tes akhir transaksi, serta admin modules users/pengiriman/galeri.
 
 **Status verifikasi:** audit statis kode repo, bukan hasil uji merchant live.
+
+
+## Update 12 November 2026 — folder website final `errorrrr` ditemukan
+
+Repository [Darren0099/errorrrr](https://github.com/Darren0099/errorrrr) berisi sekitar 461 entri yang melengkapi source awal. Temuan lama tentang folder `assets/images`, `Snackbox/Snackbox.html`, `NasiTumpeng/NasiTumpengMini.html`, dan `Pondokan/Ponfokan.html` yang hilang **hanya benar untuk repository DapurUmmikyanaPalembang lama**, tidak untuk repo `errorrrr`.
+
+- Halaman katalog utama mencantumkan 20 kartu, dan foto terkait ditemukan di `errorrrr/assets/images`. Sebanyak 27 berkas media pilihan telah dipindahkan secara utuh menggunakan hash Git blob yang sama ke `web/public/archive/`. Harga dan foto tetap diberi label arsip.
+- Snack Box memiliki **4 varian historis**: isi 3 (Rp16.000), isi 4 (Rp21.000), isi 5 (Rp25.000), isi 7 (Rp30.000), dengan deskripsi isian historis masing-masing; beberapa jenis makanan dalam daftar: risol, martabak, makaroni panggang, pastel, lumpia, roti isi, dll.
+- Tumpeng Mini memiliki **3 paket historis**: A Rp35.000, B Rp36.000, C Rp38.000; setiap paket memiliki lauk dan jenis nasi berbeda.
+- Gubukan/Pondokan memiliki **3 daftar Menu Nusantara historis**: A/B Rp25.000 per pax dan C Rp20.000 per pax. Itu merupakan menu pilihan historis, bukan jaminan seluruh makanan disajikan bersama sebagai satu paket.
+- `errorrrr/get_snap_token.php`, `payment.php`, `payment_callback.php` mengandung kode integrasi Midtrans lama. **Peringatan keamanan:** ditemukan kredensial Midtrans (Server/Client Key) langsung dalam source repository publik, dan pengaturan produksi pada sebagian kode. Kredensial harus dirotasi lewat portal merchant Midtrans sebelum API apa pun digunakan lagi. Jangan menyalin kode/kunci tersebut ke frontend modern, dan jangan menganggap callback lama memiliki validasi keamanan yang cukup.
+- Arsip Google Drive `ecommerce.zip` (270.504.353 byte) telah diidentifikasi tetapi **gagal diunduh** lewat konektor karena melebihi limit 268.435.456 byte. Konten yang hanya ada di ZIP belum dapat diklaim sudah diaudit.
