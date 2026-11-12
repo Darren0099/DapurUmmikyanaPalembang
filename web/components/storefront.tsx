@@ -26,7 +26,9 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const [drawer, setDrawer] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [hoverPaused, setHoverPaused] = useState(false);
+  const [manualPaused, setManualPaused] = useState(false);
+  const paused = hoverPaused || manualPaused;
   const [testimonial, setTestimonial] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -85,7 +87,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </div></header>
 
     <main>
-      <section id="beranda" className="market-hero" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
+      <section id="beranda" className="market-hero" onMouseEnter={()=>setHoverPaused(true)} onMouseLeave={()=>setHoverPaused(false)} onFocusCapture={()=>setHoverPaused(true)} onBlurCapture={()=>setHoverPaused(false)}>
         <div className="container market-hero-grid">
           <div className="market-hero-copy">
             <span className="market-eyebrow"><span className="market-eyebrow-dot"/> HOMEMADE FROM PALEMBANG</span>
@@ -117,7 +119,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
                   <ProductVisual product={item} compact/><span>{item.name}</span>
                 </button>)}
               </div>
-              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setPaused(value=>!value)} type="button" aria-label={paused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
+              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setManualPaused(value=>!value)} type="button" aria-label={manualPaused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
             </div>
           </div>
         </div>
@@ -223,7 +225,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
     <footer className="market-footer"><div className="container">
       <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark"><UtensilsCrossed size={22}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#galeri">Galeri</a><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
-      <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati.</span></div>
+      <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer" aria-label="Lisensi sumber foto ilustrasi">Foto ilustrasi: Unsplash</a></span></div>
     </div></footer>
 
     {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}>
