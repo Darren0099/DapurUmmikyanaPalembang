@@ -1,0 +1,313 @@
+/* DAPUR UMMI KYANA — 2026 FOOD EDITORIAL REDESIGN
+ * User-supplied references: white editorial food hero, vertical active orange menu,
+ * airy card grid, split details and Contractbook-like split auth.
+ * New visual structure; not just an override of the old hero.
+ */
+:root { --duy-ink:#171b18; --duy-muted:#747a73; --duy-orange:#ff7909; --duy-orange-soft:#fff0e1; --duy-line:#ecedea; --duy-violet:#363866; }
+.market-root{--m-forest:#171b18;--m-deep:#171b18;--m-orange:#ff7909;--m-text:#171b18;--m-muted:#777e76;color:#171b18;background:#fff;font-family:Arial,Helvetica,system-ui,sans-serif}
+.market-root .container{width:min(1410px,calc(100% - 100px))}
+.market-topline{background:#fff9f1;color:#8c6040}
+.market-topline-content{height:27px;font-size:9px;letter-spacing:.08em}
+.market-topline-content span svg{color:#f07821}
+.market-header{position:sticky;top:0;z-index:65;background:#ffffffeb;backdrop-filter:blur(20px);border-bottom:1px solid #efefec}
+.market-nav{height:86px}
+.market-brand-mark{background:#ff7909;border-radius:50%;transform:none}
+.market-brand strong{font-family:Georgia,'Times New Roman',serif;font-size:24px;letter-spacing:-.045em;color:#1c211f}
+.market-brand small{letter-spacing:.19em;color:#92968d}
+.market-links a{color:#545953;font-weight:500;font-size:13px}
+.market-links a:hover{color:#ff7909}
+.market-contact-link{color:#282d29;background:#f3f3f0;border:1px solid #eaece8;border-radius:999px;padding:13px 18px}
+.market-contact-link:hover{background:#ff7909;color:white}
+.market-cart-button{background:#fff;color:#222;border:1px solid #e7e8e6}
+.market-cart-badge{background:#ff7909}
+.market-button--primary{background:#ff7909!important;color:#fff!important;border-color:#ff7909!important}
+.market-button--primary:hover{background:#e86e00!important}
+.market-button--outline{border-color:#e2e3dd!important;color:#232923!important;background:white!important}
+.market-root h2,.market-root h3{letter-spacing:-.035em}
+.duy-hero{min-height:750px;background:linear-gradient(180deg,#fff 0%,#fff 80%,#fdfcfb 100%);position:relative;overflow:hidden;isolation:isolate}
+.duy-hero::before{content:"";position:absolute;top:8%;left:47%;width:min(44vw,550px);aspect-ratio:1;border:1px solid #f1f0ed;border-radius:50%;pointer-events:none}
+.duy-hero-layout{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.12fr) minmax(240px,.72fr);align-items:center;gap:12px;min-height:644px;padding-top:45px;padding-bottom:5px;position:relative}
+.duy-hero-intro{align-self:center;position:relative;z-index:2;padding:15px 0 65px}
+.duy-kicker{font-size:10px;letter-spacing:.19em;font-weight:750;color:#b66a32;display:flex;align-items:center;gap:10px;text-transform:uppercase}
+.duy-kicker-dot{width:8px;height:8px;border-radius:50%;background:#ff7909;box-shadow:0 0 0 5px #fff0df}
+.duy-hero-intro h1{color:#111612;font-family:Georgia,'Times New Roman',serif;font-size:clamp(63px,7vw,113px);font-weight:400;letter-spacing:-.085em;line-height:.93;margin:32px -60px 29px 0;position:relative;z-index:2}
+.duy-hero-intro h1 em{font-style:italic;font-weight:400;color:#ff7909;white-space:nowrap}
+.duy-hero-intro p{color:#80837d;line-height:1.85;font-size:14px;max-width:340px;margin:0}
+.duy-hero-intro-actions{display:flex;flex-direction:column;gap:29px;margin-top:35px}
+.duy-hero-intro-actions>span{color:#a5aaa3;font-size:10px;letter-spacing:.17em}
+.duy-text-link{display:inline-flex;align-items:center;gap:14px;font-size:13px;font-weight:750;color:#151a16;width:max-content;padding-bottom:10px;border-bottom:1px solid #272d28;transition:color .25s,border-color .25s}
+.duy-text-link:hover{color:#fa7608;border-color:#fa7608}
+.duy-hero-center{position:relative;height:590px;display:flex;align-items:center;justify-content:center;isolation:isolate}
+.duy-hero-orbit{position:absolute;z-index:-1;width:calc(100% - 18px);aspect-ratio:1;border-radius:50%;border:1px solid #f2f1ef}
+.duy-hero-orbit-two{width:calc(100% - 80px);border-color:#f7f4f0}
+.duy-hero-dish{position:absolute;top:5%;left:0;width:100%;height:82%;display:grid;place-items:center;animation:duyDishIn .7s cubic-bezier(.2,.8,.2,1) both}
+.duy-hero-dish>.market-visual{width:100%;height:100%;background:transparent!important;border:0!important;overflow:visible}
+.duy-hero-dish .market-visual>.market-product-photo,.duy-hero-dish .market-visual>.market-product-photo--archived{object-fit:contain!important;width:100%!important;height:100%!important;filter:drop-shadow(1px 32px 19px #31271926)}
+.duy-hero-dish .market-visual .food-art{background:transparent}
+.duy-hero-dish .market-illustration-label{bottom:3%;left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap}
+.duy-hero-price{position:absolute;z-index:4;left:50%;bottom:2%;width:min(365px,92%);transform:translateX(-50%);background:#ff7909;color:#fff;border-radius:99px;min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px 7px 25px;box-shadow:0 17px 32px #ff790937}
+.duy-hero-price div{display:grid;gap:4px}
+.duy-hero-price small{font-size:9px;font-weight:700;letter-spacing:.08em;color:#ffebd8}
+.duy-hero-price strong{font-size:17px}
+.duy-hero-price button{height:47px;background:#fff;color:#dc6500;border:0;border-radius:99px;padding:0 17px;display:flex;align-items:center;gap:12px;font-size:12px;font-weight:800;white-space:nowrap;transition:transform .2s}
+.duy-hero-price button:hover{transform:scale(1.04)}
+.duy-hero-choices{align-self:center;z-index:3;margin-left:-10px;padding:30px 0}
+.duy-choices-heading{display:flex;justify-content:space-between;color:#9c9e98;font-size:10px;font-weight:850;letter-spacing:.15em;padding:0 15px 15px}
+.duy-choices-heading small{color:#fd7909}
+.duy-choice{width:100%;min-height:112px;margin:0 0 10px;display:flex;align-items:center;gap:16px;text-align:left;border:1px solid #edece9;background:#fff;border-radius:66px 8px 8px 66px;padding:12px 12px 12px 14px;box-shadow:0 3px 14px #15151508;transition:background .42s cubic-bezier(.2,.8,.2,1),color .35s,transform .4s,box-shadow .35s}
+.duy-choice:hover{transform:translateX(-6px);box-shadow:0 16px 28px #12121211}
+.duy-choice-active{background:#ff7909;color:#fff;border-color:#ff7909;transform:translateX(-10px);box-shadow:0 15px 26px #ff790934}
+.duy-choice-active:hover{transform:translateX(-13px)}
+.duy-choice-photo{width:81px;height:81px;display:block;flex:none;border-radius:50%;background:#f3f3f1;overflow:hidden;box-shadow:0 3px 10px #0000001a}
+.duy-choice-photo .market-visual{width:100%;height:100%;border-radius:50%}
+.duy-choice-photo img{object-fit:cover}
+.duy-choice-photo .market-illustration-label{display:none}
+.duy-choice-photo .food-art{height:100%;width:100%}
+.duy-choice-label{display:grid;gap:8px;min-width:0;flex:1}
+.duy-choice-label strong{font-weight:620;font-size:13px;line-height:1.35}
+.duy-choice-label small{font-size:11px;opacity:.67}
+.duy-choice>svg{flex:none;opacity:.7}
+.duy-hero-controls{display:flex;align-items:center;gap:13px;margin-top:45px}
+.duy-hero-controls>button{display:inline-flex;gap:5px;align-items:center;border:0;background:none;color:#555e53;font-size:11px}
+.duy-hero-controls>button:hover{color:#fb7809}
+.duy-hero-controls .duy-pause{border:1px solid #e5e5e3;width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+.duy-progress-track{flex:1;height:2px;background:#e9eae5;min-width:28px;overflow:hidden;position:relative}
+.duy-progress-track i{position:absolute;inset:0;background:#ff7909;transform-origin:left;animation:duyProgress 6.2s linear both}
+.duy-hero-bottom{display:flex;align-items:center;justify-content:space-between;min-height:63px;border-top:1px solid #f0f0ec;letter-spacing:.12em;color:#b0afa7;font-size:9px;font-weight:700}
+.duy-hero-bottom span{display:inline-flex;align-items:center;gap:7px}
+.duy-hero-bottom a{color:#8e8c86}
+.duy-hero-bottom a:hover{color:#ff7909}
+/* Catalogue: closer to light mobile food cards in user references */
+.market-catalog-section{background:linear-gradient(180deg,#fff 0%,#f8faf8 100%)!important}
+.market-catalog-section .market-section-head h2,.market-service-section .market-section-head h2{color:#171e19}
+.market-section-head h2 em{color:#ff7909}
+.market-category-tabs button{border:1px solid #e8e9e5;background:#fff;color:#666c65}
+.market-category-tabs button.market-tab--active,.market-tab--active{background:#303e35!important;border-color:#303e35!important;color:#fff!important}
+.duy-product-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.duy-product-card{background:#fff;border:1px solid #eeeeeb;border-radius:25px;overflow:hidden;box-shadow:0 8px 30px #1b2b2108;animation:duyCardUp .65s cubic-bezier(.2,.8,.2,1) both;transition:transform .35s,box-shadow .35s}
+.duy-product-card:hover{transform:translateY(-9px);box-shadow:0 24px 45px #17221b18}
+.duy-product-image{position:relative;height:238px;background:radial-gradient(circle,#fff 25%,#f2f4f0 100%);overflow:hidden;display:grid;place-items:center}
+.duy-product-visual-trigger{border:0;background:transparent;width:100%;height:100%;padding:14px;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.duy-product-visual-trigger:hover{transform:scale(1.08) rotate(3deg)}
+.duy-product-visual-trigger .market-visual{width:100%;height:100%;border-radius:0;background:transparent}
+.duy-product-visual-trigger .market-product-photo{object-fit:contain}
+.duy-product-visual-trigger .market-visual .food-art{background:transparent}
+.duy-product-visual-trigger .market-illustration-label{bottom:7px;left:10px}
+.duy-featured-label{z-index:2;position:absolute;left:15px;top:15px;padding:9px 11px;background:#fff;border-radius:99px;color:#c77a3a;font-size:9px;letter-spacing:.08em;font-weight:800}
+.duy-quick-cart{position:absolute;z-index:2;right:15px;bottom:14px;background:#ff7909;color:#fff;border:0;width:45px;height:45px;border-radius:50%;display:grid;place-items:center;box-shadow:0 7px 22px #ff79094f;transition:transform .25s}
+.duy-quick-cart:hover{transform:scale(1.1) rotate(90deg)}
+.duy-product-content{padding:19px 20px 21px}
+.duy-product-content>span{font-size:10px;color:#c07749;letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+.duy-product-content h3{font-size:18px;font-family:Arial,Helvetica,sans-serif;font-weight:750;line-height:1.3;margin:10px 0}
+.duy-product-content h3 button{display:flex;align-items:center;gap:5px;text-align:left;color:#222924;background:none;border:0;padding:0;font:inherit}
+.duy-product-content h3 button:hover{color:#f7780b}
+.duy-product-content p{font-size:12px;line-height:1.7;color:#8b918a;min-height:42px;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.duy-product-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #eceee9;margin-top:18px;padding-top:16px}
+.duy-product-bottom strong{font-size:14px;color:#151a16}
+.duy-product-bottom button{display:inline-flex;align-items:center;gap:5px;color:#f07818;font-weight:750;font-size:11px;background:transparent;border:0;white-space:nowrap}
+/* In-place detail morph / side-by-side ingredient-inspired panel */
+.duy-dialog-backdrop{position:fixed;inset:0;z-index:120;background:#1b211b8a;backdrop-filter:blur(13px);padding:24px;display:grid;place-items:center;animation:duyFadeIn .24s ease both}
+.duy-detail-dialog{width:min(1050px,100%);max-height:calc(100dvh - 48px);display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);border-radius:34px;overflow:hidden;background:white;box-shadow:0 35px 100px #1019104a;animation:duyMorph .58s cubic-bezier(.18,.86,.24,1) both}
+.duy-detail-photo{position:relative;min-height:590px;overflow:hidden;background:linear-gradient(145deg,#ecf2e9,#fafbf4)}
+.duy-detail-photo>.market-visual{height:100%;width:100%;background:transparent}
+.duy-detail-photo .market-product-photo{object-fit:cover}
+.duy-detail-photo .food-art{height:100%}
+.duy-detail-deco{position:absolute;top:24px;left:26px;font-weight:900;font-size:10px;letter-spacing:.16em;color:#446348;z-index:3}
+.duy-detail-photo-caption{position:absolute;left:32px;bottom:35px;display:grid;gap:8px;z-index:4;color:#1c301f;text-shadow:0 1px 9px #ffffffad}
+.duy-detail-photo-caption span{font-size:10px;font-weight:800;letter-spacing:.17em}
+.duy-detail-photo-caption strong{font-family:Georgia,serif;font-weight:500;line-height:1;font-size:clamp(40px,5vw,70px);letter-spacing:-.06em}
+.duy-detail-info{position:relative;padding:clamp(28px,4vw,56px);overflow-y:auto;display:flex;flex-direction:column;align-items:stretch;gap:19px}
+.duy-dialog-close{position:absolute;right:24px;top:22px;border:1px solid #e8ebe6;border-radius:50%;display:grid;place-items:center;width:40px;height:40px;background:#fff;color:#343e34}
+.duy-detail-info>.duy-kicker{margin-top:17px}
+.duy-detail-info h2{font-family:Georgia,serif;font-size:clamp(37px,4vw,58px);font-weight:500;line-height:1.04;letter-spacing:-.06em;color:#1d251e;margin:0;padding-right:15px}
+.duy-detail-summary{display:flex;gap:9px;flex-wrap:wrap}
+.duy-detail-summary span{display:flex;align-items:center;gap:6px;border-radius:30px;padding:8px 11px;background:#f6f8f4;color:#627663;font-size:11px}
+.duy-detail-info>p{margin:0;font-size:14px;line-height:1.8;color:#7a8178}
+.duy-detail-inclusions{border:1px solid #e9eeec;border-radius:22px;overflow:hidden;background:#fcfefd}
+.duy-detail-inclusions>div:first-child{padding:21px 23px;border-bottom:1px solid #e8efed;background:#f4f8f6;display:flex;justify-content:space-between;gap:15px;align-items:center}
+.duy-detail-inclusions>div:first-child strong{font-size:14px}
+.duy-detail-inclusions small{font-size:10px;color:#89958d}
+.duy-detail-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 23px;border-bottom:1px solid #edf1ee}
+.duy-detail-row:last-child{border-bottom:0}
+.duy-detail-row>span{font-size:12px;color:#717b73}
+.duy-detail-row strong{color:#1c342c;font-size:15px}
+.duy-detail-checkout{display:flex;align-items:center;gap:13px}
+.duy-quantity{display:flex;align-items:center;gap:12px;background:#f3f5f3;border-radius:999px;padding:8px 11px}
+.duy-quantity button{width:30px;height:30px;background:white;border:0;border-radius:50%;display:grid;place-items:center;color:#283b32}
+.duy-quantity button:disabled{opacity:.35}
+.duy-quantity strong{min-width:15px;text-align:center;font-size:14px}
+.duy-detail-add{flex:1;min-height:52px;display:flex;align-items:center;justify-content:center;gap:12px;border-radius:100px;border:0;background:#123e43;color:white;font-size:13px;font-weight:800;white-space:nowrap}
+.duy-detail-add:hover{background:#0f5960}
+.duy-detail-disclaimer{color:#949b94;line-height:1.55;font-size:10px}
+.duy-mobile-dock{display:none}
+/* Auth: restrained editorial split, animated swap between sign-in and sign-up */
+.duy-auth{min-height:100dvh;background:#f7f7f5;padding:20px;display:grid;place-items:center;color:#1a211c}
+.duy-auth-shell{width:min(1350px,100%);min-height:min(830px,calc(100dvh - 40px));display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;background:#fff;border-radius:30px;box-shadow:0 30px 100px #27332810}
+.duy-auth-story{position:relative;background:#f1f5ec;display:flex;flex-direction:column;justify-content:space-between;padding:35px clamp(25px,4vw,58px);overflow:hidden;isolation:isolate}
+.duy-auth-story:after{content:"";position:absolute;width:640px;aspect-ratio:1;border:1px solid #dce9d8;border-radius:50%;top:28%;left:21%;z-index:-1}
+.duy-auth-brand{display:flex;align-items:center;gap:14px;position:relative;z-index:2;font-size:17px;font-weight:900;letter-spacing:-.02em}
+.duy-auth-brand small{display:block;margin-top:5px;font-size:9px;letter-spacing:.18em;color:#819384}
+.duy-auth-monogram{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#ff7909;color:white;font-family:Georgia,serif;font-size:28px;font-weight:700}
+.duy-auth-monogram span{color:#ffd8b7}
+.duy-auth-story-content{padding-top:35px;z-index:1}
+.duy-auth-overline{display:flex;align-items:center;gap:9px;letter-spacing:.16em;font-size:10px;font-weight:800;color:#6e8b6f}
+.duy-auth-story h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(58px,5.4vw,93px);letter-spacing:-.08em;line-height:.98;font-weight:400;margin:18px 0;color:#1f3e2c}
+.duy-auth-story h1 em{color:#ec8b3c;font-weight:400}
+.duy-auth-story-content>p{color:#728571;line-height:1.8;max-width:370px;font-size:14px}
+.duy-auth-art{height:300px;width:min(430px,100%);margin:8px auto 0;position:relative;isolation:isolate;animation:duyFloat 8s ease-in-out infinite}
+.duy-auth-art-orbit{position:absolute;inset:4% 18%;border-radius:50%;background:#e1ebd7}
+.duy-auth-food-image{object-fit:contain!important;filter:drop-shadow(0 22px 24px #1b3b2122)}
+.duy-auth-art-tag{position:absolute;right:-10px;bottom:18px;background:#fff;border-radius:99px;padding:12px 15px;box-shadow:0 14px 45px #16341619;color:#35563a;font-size:11px;font-weight:800;display:flex;gap:8px;align-items:center}
+.duy-auth-story-footer{display:flex;justify-content:space-between;gap:10px;letter-spacing:.16em;font-size:9px;font-weight:750;color:#8eaa8d}
+.duy-auth-panel{min-width:0;display:flex;flex-direction:column;justify-content:space-between;padding:35px clamp(25px,5vw,70px);background:#fff}
+.duy-auth-panel-top{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:11px;color:#848b83}
+.duy-auth-panel-top>span{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:10px;letter-spacing:.08em}
+.duy-auth-panel-top>span button{border:0;background:none;font-size:10px;color:#f27811;font-weight:900;display:flex;align-items:center;gap:3px}
+.duy-auth-back{display:inline-flex;gap:8px;align-items:center}
+.duy-auth-back:hover{color:#ff7909}
+.duy-auth-content{width:min(410px,100%);margin:35px auto}
+.duy-auth-step{color:#ff7909;font-size:10px;font-weight:900;letter-spacing:.18em}
+.duy-auth-title{animation:duyAuthSwap .48s cubic-bezier(.2,.8,.2,1) both}
+.duy-auth-title h2{font-family:Georgia,serif;font-size:clamp(49px,5vw,74px);line-height:.98;font-weight:400;letter-spacing:-.07em;margin:22px 0 18px;color:#1a211c}
+.duy-auth-title h2 em{font-weight:400;font-style:italic;color:#f17b17}
+.duy-auth-title p{color:#828980;font-size:14px;line-height:1.7;margin:0 0 26px}
+.duy-auth-tabs{display:flex;gap:24px;border-bottom:1px solid #e9eae6;margin:18px 0 27px}
+.duy-auth-tabs button{position:relative;background:transparent;border:0;padding:0 0 14px;color:#9ba29a;font-size:13px;font-weight:750}
+.duy-auth-tabs button.active{color:#202923}
+.duy-auth-tabs button.active:after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:2px;background:#fb780b;border-radius:99px}
+.duy-auth-form{display:grid;gap:19px}
+.duy-auth-field{display:grid;gap:10px}
+.duy-auth-field>span:first-child{font-size:10px;letter-spacing:.14em;font-weight:850;color:#5e695f}
+.duy-auth-input{height:55px;border:1px solid #e7eae6;border-radius:12px;display:flex;align-items:center;gap:13px;padding:0 15px;transition:border .2s,box-shadow .2s;background:#fff;color:#9aaba0}
+.duy-auth-input:focus-within{border-color:#fa8b35;box-shadow:0 0 0 4px #ff790910}
+.duy-auth-input input{border:0;outline:0;flex:1;min-width:0;background:transparent;color:#1f2a20;font-size:14px}
+.duy-auth-input input::placeholder{color:#b5beb5}
+.duy-auth-input>button{background:transparent;border:0;color:#8c9b8f;padding:2px;display:grid;place-items:center}
+.duy-auth-guidance{font-size:11px;color:#60836d;display:flex;gap:7px;align-items:center}
+.duy-auth-notice{font-size:12px;line-height:1.6;padding:11px 14px;border-radius:10px;background:#fff3ec;color:#a04b35;border:1px solid #f4d0bc}
+.duy-auth-notice.success{background:#edf8ee;color:#3c8050;border-color:#cce8d3}
+.duy-auth-submit{height:58px;border:0;border-radius:12px;background:#182f28;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:13px;font-weight:800;box-shadow:0 15px 30px #1c3c2e1b;transition:background .22s,transform .22s}
+.duy-auth-submit:hover{background:#f27c14;transform:translateY(-2px)}
+.duy-auth-submit:disabled{opacity:.5;cursor:not-allowed}
+.duy-auth-switch{font-size:12px;color:#848e85;text-align:center;margin:23px 0}
+.duy-auth-switch button{background:transparent;border:0;color:#ed7a19;font-size:12px;font-weight:850}
+.duy-auth-demo{font-size:10px;color:#90998f;border-top:1px solid #eff0ee;line-height:1.6;padding-top:18px;display:flex;align-items:flex-start;gap:8px}
+.duy-auth-demo svg{flex:none}
+.duy-auth-panel-footer{font-size:10px;color:#aeb4ad;display:flex;justify-content:space-between;gap:10px}
+/* Smooth section transitions without affecting layout */
+.market-quick-categories,.market-editorial-picks,.market-catalog-section,.market-service-section,.market-gallery-section,.market-about-section{scroll-margin-top:110px}
+.market-shortcut-card{border-radius:22px!important;transition:transform .35s,box-shadow .35s!important}
+.market-shortcut-card:hover{transform:translateY(-8px)!important}
+.market-visual .market-product-photo{transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+.market-gallery-tile:hover .market-product-photo{transform:scale(1.05)}
+.market-service-section,.market-gallery-section{background:#fff}
+.market-offer-section{background:#f7f9f5}
+@keyframes duyFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes duyMorph{from{opacity:0;transform:translateY(34px) scale(.87);border-radius:70px}to{opacity:1;transform:translateY(0) scale(1);border-radius:34px}}
+@keyframes duyDishIn{from{opacity:0;transform:translateY(28px) scale(.8) rotate(-13deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+@keyframes duyProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes duyCardUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes duyAuthSwap{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes duyFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+@media(max-width:1180px){
+ .duy-hero-layout{grid-template-columns:minmax(0,.9fr) minmax(0,1.05fr) minmax(205px,.7fr)}
+ .duy-hero-intro h1{font-size:clamp(59px,6.5vw,89px)}
+ .duy-hero-center{height:520px}
+ .duy-choice-photo{width:65px;height:65px}
+ .duy-choice{min-height:90px;padding:10px}
+ .duy-choice-label strong{font-size:12px}
+ .duy-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:900px){
+ .market-root .container{width:calc(100% - 48px)}
+ .duy-hero{min-height:auto}
+ .duy-hero-layout{grid-template-columns:1fr 1fr;min-height:0;gap:0;padding-top:43px}
+ .duy-hero-intro{padding:0}
+ .duy-hero-intro h1{font-size:clamp(58px,8vw,87px);margin:18px 0 15px}
+ .duy-hero-center{height:460px}
+ .duy-hero-choices{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0;padding:10px 0 25px}
+ .duy-choices-heading{grid-column:1/-1}
+ .duy-choice{border-radius:15px;min-height:85px;margin:0;padding:8px;gap:8px}
+ .duy-choice-active,.duy-choice-active:hover{transform:translateY(-4px)}
+ .duy-choice-photo{width:52px;height:52px}
+ .duy-choice>svg{display:none}
+ .duy-hero-controls{grid-column:1/-1;margin:12px 0 0}
+ .duy-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .duy-auth-shell{grid-template-columns:1fr 1.05fr}
+ .duy-auth-story{padding:30px 24px}
+ .duy-auth-story h1{font-size:58px}
+ .duy-auth-panel{padding:28px}
+ .duy-auth-art{height:240px}
+}
+@media(max-width:700px){
+ .market-root .container{width:calc(100% - 34px)}
+ .market-nav{height:69px}
+ .market-brand strong{font-size:19px}
+ .market-brand small{font-size:8px}
+ .market-brand-mark{width:40px;height:40px}
+ .market-contact-link{display:none}
+ .market-mobile-trigger{display:grid}
+ .market-topline-content span:last-child{display:none}
+ .duy-hero-layout{display:flex;flex-direction:column;padding:32px 0 15px}
+ .duy-hero-intro{width:100%;padding:10px 0 4px}
+ .duy-hero-intro h1{font-size:clamp(59px,11vw,83px);margin:18px 0 17px}
+ .duy-hero-intro p{max-width:510px;font-size:13px}
+ .duy-hero-intro-actions{margin-top:18px;gap:12px}
+ .duy-hero-intro-actions>span{display:none}
+ .duy-hero-center{height:390px;width:100%;margin:0 auto}
+ .duy-hero-dish{height:80%;top:3%}
+ .duy-hero-price{bottom:0;min-height:60px}
+ .duy-hero-choices{display:flex;flex-direction:column;width:100%;padding-top:28px;gap:7px}
+ .duy-choices-heading{padding:0 4px 7px}
+ .duy-choice{width:100%;min-height:70px;border-radius:42px;padding:7px 13px 7px 8px;gap:14px}
+ .duy-choice-photo{height:56px;width:56px}
+ .duy-choice-active,.duy-choice-active:hover{transform:translateX(0)}
+ .duy-choice>svg{display:block}
+ .duy-hero-controls{width:100%;margin-top:12px}
+ .duy-hero-bottom{display:none}
+ .duy-product-grid{gap:11px}
+ .duy-product-card{border-radius:18px}
+ .duy-product-image{height:180px}
+ .duy-product-content{padding:13px}
+ .duy-product-content h3{font-size:14px}
+ .duy-product-content p{font-size:11px;min-height:36px}
+ .duy-product-bottom{margin-top:10px;padding-top:12px;align-items:flex-start;flex-direction:column}
+ .duy-quick-cart{width:34px;height:34px;right:9px;bottom:8px}
+ .duy-featured-label{font-size:8px;top:9px;left:9px;padding:7px}
+ .duy-dialog-backdrop{padding:8px;align-items:end}
+ .duy-detail-dialog{grid-template-columns:1fr;max-height:calc(100dvh - 14px);border-radius:26px 26px 0 0}
+ .duy-detail-photo{min-height:250px;height:250px}
+ .duy-detail-photo .market-product-photo{object-fit:contain}
+ .duy-detail-photo-caption{left:19px;bottom:14px}
+ .duy-detail-photo-caption strong{font-size:36px}
+ .duy-detail-photo-caption span{font-size:8px}
+ .duy-detail-info{padding:21px;gap:13px;overflow-y:auto}
+ .duy-detail-info h2{font-size:34px}
+ .duy-detail-info>p{font-size:12px}
+ .duy-detail-inclusions>div:first-child{padding:13px}
+ .duy-detail-row{padding:12px 13px}
+ .duy-detail-checkout{position:sticky;bottom:0;background:#fff;padding-bottom:5px}
+ .duy-detail-add{font-size:11px}
+ .duy-mobile-dock{position:fixed;z-index:70;bottom:10px;left:50%;transform:translateX(-50%);width:min(430px,calc(100% - 28px));display:grid;grid-template-columns:repeat(4,1fr);align-items:center;padding:9px 10px 7px;border:1px solid #ebebe8;border-radius:22px;background:#ffffffed;backdrop-filter:blur(18px);box-shadow:0 18px 50px #121b142b}
+ .duy-mobile-dock>a,.duy-mobile-dock>button{color:#69726a;background:transparent;border:0;display:grid;justify-items:center;gap:4px;font-size:9px;font-weight:750}
+ .duy-mobile-dock>a:hover,.duy-mobile-dock>button:hover{color:#ff7909}
+ .duy-mobile-dock svg{max-width:none}
+ .market-footer{padding-bottom:90px}
+ .duy-auth{padding:0;background:white}
+ .duy-auth-shell{min-height:100dvh;display:flex;flex-direction:column;border-radius:0;box-shadow:none}
+ .duy-auth-story{min-height:260px;padding:21px 23px 12px}
+ .duy-auth-brand{font-size:15px}
+ .duy-auth-story-content{padding-top:26px}
+ .duy-auth-story h1{font-size:clamp(46px,10vw,65px);margin:12px 0}
+ .duy-auth-story-content>p{font-size:12px;max-width:270px}
+ .duy-auth-art{position:absolute;width:210px;height:210px;right:-43px;bottom:-37px;opacity:.68}
+ .duy-auth-art-tag,.duy-auth-story-footer{display:none}
+ .duy-auth-panel{padding:24px 23px 20px;flex:1}
+ .duy-auth-content{margin:36px auto 28px}
+ .duy-auth-title h2{font-size:48px}
+}
+@media(max-width:390px){.duy-hero-intro h1{font-size:54px}.duy-hero-center{height:340px}.duy-product-image{height:145px}.duy-product-bottom strong{font-size:12px}.duy-auth-panel-top>span{display:none}}
+@media(prefers-reduced-motion:reduce){
+ .duy-hero-dish,.duy-product-card,.duy-detail-dialog,.duy-dialog-backdrop,.duy-auth-title,.duy-auth-art,.duy-progress-track i{animation:none!important}
+ .duy-choice,.duy-quick-cart,.duy-product-card,.duy-product-visual-trigger{transition:none!important}
+}
