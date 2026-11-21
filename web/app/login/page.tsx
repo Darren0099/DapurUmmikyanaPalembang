@@ -2,9 +2,9 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, LockKeyhole, UtensilsCrossed, Eye, EyeOff } from 'lucide-react';
-import { browserSupabase } from '@/lib/supabase';
+import { browserStoreAuth } from '@/lib/auth-client';
 export default function LoginPage(){
- const supabase=useMemo(()=>browserSupabase(),[]);
+ const supabase=useMemo(()=>browserStoreAuth(),[]);
  const [email,setEmail]=useState('');const [password,setPassword]=useState('');const [name,setName]=useState('');
  const [register,setRegister]=useState(false);const [showPassword,setShowPassword]=useState(false);const [busy,setBusy]=useState(false);const [notice,setNotice]=useState('');
  async function submit(e:React.FormEvent){
