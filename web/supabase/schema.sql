@@ -33,7 +33,7 @@ create table if not exists public.orders (
   subtotal_idr integer not null check (subtotal_idr > 0),
   delivery_fee_idr integer check (delivery_fee_idr >= 0),
   total_idr integer not null check (total_idr > 0),
-  payment_method text not null default 'manual' check (payment_method in ('manual')),
+  payment_method text not null default 'demo' check (payment_method in ('manual','demo')),
   payment_status text not null default 'awaiting_confirmation' check (payment_status in ('awaiting_confirmation','paid','failed','refunded')),
   status text not null default 'pending' check (status in ('pending','confirmed','preparing','delivering','completed','cancelled')),
   paid_at timestamptz,
@@ -101,3 +101,8 @@ insert into public.products (slug,name,category,description,price_idr,featured,a
 ('nasi-bakar','Nasi Bakar','Nasi Pilihan','Nasi bakar beraroma daun dan bumbu pilihan.',25000,true,'green'),
 ('nasi-cumi-asin','Nasi Cumi Asin','Seafood','Cumi asin dengan nasi hangat.',25000,false,'gold')
 on conflict (slug) do nothing;
+
+-- Apply this additive migration to databases created before demo checkout.
+alter table public.orders drop constraint if exists orders_payment_method_check;
+alter table public.orders add constraint orders_payment_method_check check (payment_method in ('manual','demo'));
+alter table public.orders alter column payment_method set default 'demo';
