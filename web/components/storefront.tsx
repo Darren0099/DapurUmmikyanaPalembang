@@ -100,7 +100,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
               <span>SEDANG DITAMPILKAN</span>
               <strong key={current?.slug} className="market-hero-dish-name">{current?.name || 'Menu pilihan dapur'}</strong>
             </div>
-            <p className="market-hero-description">Pilihan menu rumahan, nasi box, dan sajian acara. Temukan hidangan favoritmu, lalu konfirmasi ketersediaannya langsung dengan dapur kami.</p>
+            <p className="market-hero-description">Pilihan menu rumahan, nasi box, dan sajian acara. Temukan hidangan favoritmu, lalu selesaikan pemesanan di website kami.</p>
             <div className="market-hero-actions">
               <a href="#menu" className="market-button market-button--primary">Jelajahi menu <ArrowUpRight size={17}/></a>
               <Link href="/layanan" className="market-button market-button--outline">Paket catering <ArrowRight size={17}/></Link>
@@ -163,7 +163,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <div className="market-ticker"><div className="container market-ticker-inner"><span><Leaf size={18}/> Menu rumahan</span><i/><span><UtensilsCrossed size={18}/> Rasa Nusantara</span><i/><span><Truck size={18}/> Tanya jadwal pengiriman</span><i/><span><HeartHandshake size={18}/> Catering & acara</span></div></div>
 
       <section className="market-catalog-section" id="menu"><div className="container">
-        <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi hidangan dari katalog Dapur Ummi Kyana. Pilih yang kamu suka, simpan ke keranjang, dan konfirmasi pemesanan.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
+        <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi menu, pilih porsi, dan selesaikan checkout demo langsung di website.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
         {!live&&<div className="market-menu-note"><Check size={18}/><p><strong>Pratinjau katalog lama.</strong> Harga merupakan referensi historis, bukan penawaran aktif. Konfirmasikan harga dan ketersediaan sebelum membeli. Foto berasal dari aset website arsip 2025; menu, komposisi, dan harga terkini tetap perlu dikonfirmasi.</p></div>}
         <div className="market-product-toolbar">
           <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
@@ -232,6 +232,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · Fotografi situs lama, direstorasi dari arsip GitHub</span></div>
     </div></footer>
 
+    {selectedProduct&&<div className="product-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedProduct(null)}}><section className="product-modal" role="dialog" aria-modal="true" aria-label={'Detail '+selectedProduct.name}><button className="product-modal-close" onClick={()=>setSelectedProduct(null)} aria-label="Tutup detail"><X size={22}/></button><div className="product-modal-visual"><ProductVisual product={selectedProduct} hero/></div><div className="product-modal-body"><span className="market-product-category">{selectedProduct.category}</span><h2>{selectedProduct.name}</h2><p>{selectedProduct.description}</p><strong className="product-modal-price">{formatRupiah(selectedProduct.price_idr)}</strong><p className="checkout-note">Informasi komposisi dan alergen akan diperbarui setelah konfirmasi dari dapur.</p><button className="market-button market-button--primary" onClick={()=>{addToCart(selectedProduct.slug);setSelectedProduct(null)}}>Tambah ke keranjang <Plus size={18}/></button></div></section></div>
     {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}>
       <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="market-cart-title">
         <div className="drawer-head"><div><span className="market-eyebrow">PILIHAN KAMU</span><h2 id="market-cart-title">Keranjang <span>({cart.count})</span></h2></div><button type="button" className="icon-button" aria-label="Tutup keranjang" onClick={()=>setDrawer(false)}><X/></button></div>
