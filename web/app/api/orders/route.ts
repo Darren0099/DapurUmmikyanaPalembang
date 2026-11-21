@@ -44,7 +44,7 @@ export async function POST(request:Request){
   const {data:order,error:orderError}=await db.from('orders').insert({
     user_id:user.id,client_request_id:body.client_request_id!,customer_name:name,customer_phone:phone,fulfillment,
     delivery_address:fulfillment==='delivery'?address:null,notes,subtotal_idr:subtotal,total_idr:subtotal,
-    delivery_fee_idr:fulfillment==='pickup'?0:null,payment_method:'manual',payment_status:'awaiting_confirmation',status:'pending',
+    delivery_fee_idr:fulfillment==='pickup'?0:null,payment_method:'demo',payment_status:'awaiting_confirmation',status:'pending',
   }).select('id').single();
   if(orderError||!order) {
     if(orderError?.code==='23505'){
@@ -55,5 +55,5 @@ export async function POST(request:Request){
   }
   const {error:itemsError}=await db.from('order_items').insert(lines.map(x=>({order_id:order.id,product_id:x.product.id,product_name:x.product.name,unit_price_idr:x.product.price_idr,quantity:x.quantity,line_total_idr:x.product.price_idr*x.quantity})));
   if(itemsError){await db.from('orders').delete().eq('id',order.id);return invalid('Gagal menyimpan detail pesanan, tidak ada pembayaran yang diproses.',500)}
-  return NextResponse.json({order_id:order.id,subtotal_idr:subtotal,payment_status:'awaiting_confirmation',shipping_pending:fulfillment==='delivery'},{status:201,headers:{'Cache-Control':'no-store'}});
+  return NextResponse.json({order_id:order.id,subtotal_idr:subtotal,payment_status:'awaiting_confirmation',shipping_pending:fulfillment==='delivery',demo:true},{status:201,headers:{'Cache-Control':'no-store'}});
 }
