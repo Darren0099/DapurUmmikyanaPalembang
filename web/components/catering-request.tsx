@@ -1,9 +1,9 @@
 'use client';
 import { useMemo,useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { browserSupabase } from '@/lib/supabase';
+import { browserStoreAuth } from '@/lib/auth-client';
 export default function CateringRequest({slug,options}:{slug:string;options:string[]}){
- const client=useMemo(()=>browserSupabase(),[]);const router=useRouter();
+ const client=useMemo(()=>browserStoreAuth(),[]);const router=useRouter();
  const [packageName,setPackageName]=useState(options[0]||'Konsultasi paket');
  const [quantity,setQuantity]=useState('30');const [scheduledFor,setScheduledFor]=useState('');
  const [phone,setPhone]=useState('');const [address,setAddress]=useState('');const [notes,setNotes]=useState('');
