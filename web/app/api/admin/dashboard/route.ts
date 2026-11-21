@@ -6,11 +6,18 @@ export async function GET(request:Request) {
   const db=serviceSupabase();
   if(!db)return NextResponse.json({error:'Database belum dikonfigurasi.'},{status:503});
   const [orders,products,orderCount,catering]=await Promise.all([
-    db.from('orders').select('id,customer_name,customer_phone,fulfillment,total_idr,subtotal_idr,payment_status,payment_method,status,created_at,delivery_address,notes,scheduled_for,user_id').order('created_at',{ascending:false}).limit(100),
+    db.from('orders').select('id,customer_name,customer_phone,fulfillment,total_idr,subtotal_idr,payment_status,payment_method,status,created_at,delivery_address,notes,scheduled_for,user_id,order_items(product_name,quantity,line_total_idr)').order('created_at',{ascending:false}).limit(100),
     db.from('products').select('id,slug,name,category,description,price_idr,active,featured,accent,image_url,created_at').order('created_at',{ascending:false}).limit(200),
     db.from('orders').select('id',{count:'exact',head:true}),
     db.from('catering_requests').select('id,user_id,service_slug,package_name,quantity,scheduled_for,phone,address,notes,status,created_at').order('created_at',{ascending:false}).limit(100),
   ]);
   if(orders.error||products.error||orderCount.error||catering.error)return NextResponse.json({error:'Tidak dapat memuat dashboard.'},{status:500});
-  return NextResponse.json({orders:orders.data||[],products:products.data||[],totalOrders:orderCount.count||0,catering:catering.data||[]},{headers:{'Cache-Control':'private, no-store'}});
+  const ids=[...new Set([...(orders.data||[]).map(o=>o.user_id),...(catering.data||[]).map(c=>c.user_id)])];
+  const emails:Record<string,string>={};
+  if(ids.length){
+    // Admin-only response; no email is ever exposed on public routes.
+    const {data:usersData,error:usersError}=await db.auth.admin.listUsers({page:1,perPage:1000});
+    if(!usersError)for(const user of usersData.users){if(ids.includes(user.id))emails[user.id]=user.email||'';}
+  }
+  return NextResponse.json({orders:(orders.data||[]).map(o=>({...o,customer_email:emails[o.user_id]||''})),products:products.data||[],totalOrders:orderCount.count||0,catering:(catering.data||[]).map(c=>({...c,customer_email:emails[c.user_id]||''}))},{headers:{'Cache-Control':'private, no-store'}});
 }
