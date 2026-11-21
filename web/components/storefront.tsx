@@ -25,7 +25,9 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const [category, setCategory] = useState('Semua');
   const [search, setSearch] = useState('');
   const [showAll, setShowAll] = useState(false);
-  const [drawer, setDrawer] = useState(false);const [selectedProduct,setSelectedProduct]=useState<Product|null>(null);
+  const [drawer, setDrawer] = useState(false);
+  const [selectedProduct,setSelectedProduct]=useState<Product|null>(null);
+  const [detailQty,setDetailQty]=useState(1);
   const [mobileNav, setMobileNav] = useState(false);
   const [active, setActive] = useState(0);
   const [hoverPaused, setHoverPaused] = useState(false);
@@ -90,44 +92,44 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </div></header>
 
     <main>
-      <section id="beranda" className="market-hero" onMouseEnter={()=>setHoverPaused(true)} onMouseLeave={()=>setHoverPaused(false)} onFocusCapture={()=>setHoverPaused(true)} onBlurCapture={()=>setHoverPaused(false)}>
-        <div className="container market-hero-grid">
-          <div className="market-hero-copy">
-            <span className="market-eyebrow"><span className="market-eyebrow-dot"/> HOMEMADE FROM PALEMBANG</span>
-            <p className="market-hero-pretitle">MAKANAN RUMAHAN & CATERING PALEMBANG</p>
-            <h1 className="market-hero-static-title">Momen terbaik<br/>dimulai dari <em>rasa.</em></h1>
-            <div className="market-hero-dish-indicator" aria-live="polite">
-              <span>SEDANG DITAMPILKAN</span>
-              <strong key={current?.slug} className="market-hero-dish-name">{current?.name || 'Menu pilihan dapur'}</strong>
+      <section id="beranda" className="duy-hero" aria-label="Menu unggulan Dapur Ummi Kyana" onMouseEnter={()=>setHoverPaused(true)} onMouseLeave={()=>setHoverPaused(false)} onFocusCapture={()=>setHoverPaused(true)} onBlurCapture={()=>setHoverPaused(false)}>
+        <div className="container duy-hero-layout">
+          <div className="duy-hero-intro">
+            <span className="duy-kicker"><span className="duy-kicker-dot"/> MADE WITH LOVE IN PALEMBANG</span>
+            <h1>Good food.<br/><em>Good moments.</em></h1>
+            <p>Masakan rumahan, nasi box, dan katering untuk setiap cerita. Pilih hidangan favoritmu, atur jumlahnya, dan pesan langsung melalui website.</p>
+            <div className="duy-hero-intro-actions">
+              <a href="#menu" className="duy-text-link">Explore our menu <ArrowUpRight size={17}/></a>
+              <span>01 — MENU PILIHAN</span>
             </div>
-            <p className="market-hero-description">Pilihan menu rumahan, nasi box, dan sajian acara. Temukan hidangan favoritmu, lalu selesaikan pemesanan di website kami.</p>
-            <div className="market-hero-actions">
-              <a href="#menu" className="market-button market-button--primary">Jelajahi menu <ArrowUpRight size={17}/></a>
-              <Link href="/layanan" className="market-button market-button--outline">Paket catering <ArrowRight size={17}/></Link>
-            </div>
-            <div className="market-hero-proof"><span><Leaf size={17}/> Masakan Nusantara</span><span><HeartHandshake size={17}/> Pilihan acara & keluarga</span></div>
           </div>
-          <div className="market-hero-gallery">
-            <div className="market-hero-stage">
-              <div className="market-hero-disc" aria-hidden="true"/>
-              <div className="market-hero-sticker"><span>PILIHAN</span><strong>{String(active+1).padStart(2,'0')}</strong><small>/ {String(featured.length).padStart(2,'0')}</small></div>
-              {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero/></div>}
-              <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Harga simulasi, cek isi katalog':'Harga demo dari katalog arsip; bukan penawaran aktif'}</small></div>
-              <div className="market-hero-stage-note" aria-hidden="true">HOME-COOKED FOOD · PALEMBANG</div>
-              <span className="market-hero-orbit-label" aria-hidden="true">FROM OUR 2025 ARCHIVE</span>
+          <div className="duy-hero-center">
+            <span className="duy-hero-orbit duy-hero-orbit-one" aria-hidden="true"/>
+            <span className="duy-hero-orbit duy-hero-orbit-two" aria-hidden="true"/>
+            <div className="duy-hero-dish" key={current?.slug}>
+              {current&&<ProductVisual product={current} hero/>}
             </div>
-            <div id="favorit" className="market-hero-carousel-controls">
-              <div className="market-featured-thumbs" aria-label="Pilih hidangan unggulan">
-                {featured.map((item,index)=><button key={item.slug} type="button" className={'market-thumb '+(index===active?'market-thumb--active':'')} onClick={()=>setActive(index)} aria-pressed={index===active} aria-label={'Tampilkan '+item.name}>
-                  <ProductVisual product={item} compact/><span>{item.name}</span>
-                </button>)}
-              </div>
-              {featured.length>1&&<div className="market-carousel-arrows"><button onClick={()=>changeSlide(-1)} type="button" aria-label="Menu unggulan sebelumnya"><ChevronLeft size={19}/></button><button onClick={()=>setManualPaused(value=>!value)} type="button" aria-label={manualPaused?'Putar carousel otomatis':'Jeda carousel otomatis'}>{paused?<Play size={16}/>:<Pause size={16}/>}</button><button onClick={()=>changeSlide(1)} type="button" aria-label="Menu unggulan berikutnya"><ChevronRight size={19}/></button></div>}
+            <div className="duy-hero-price">
+              <div><small>MENU UNGGULAN · HARGA DEMO</small><strong>{formatRupiah(current?.price_idr||0)}</strong></div>
+              {current&&<button type="button" onClick={()=>addToCart(current.slug)}>Add to cart <ArrowRight size={18}/></button>}
             </div>
-          {featured.length > 1 && <div className="market-slide-progress" aria-hidden="true"><span key={active} style={{animationPlayState:paused?'paused':'running'}}/></div>}
+          </div>
+          <div className="duy-hero-choices" aria-label="Pilih makanan unggulan">
+            <div className="duy-choices-heading"><span>OUR FAVORITES</span><small>{String(active+1).padStart(2,'0')} / {String(featured.length).padStart(2,'0')}</small></div>
+            {featured.slice(0,3).map((item,index)=><button className={'duy-choice '+(index===active?'duy-choice-active':'')} key={item.slug} type="button" onClick={()=>setActive(index)} aria-pressed={index===active}>
+              <span className="duy-choice-photo"><ProductVisual product={item} compact/></span>
+              <span className="duy-choice-label"><strong>{item.name}</strong><small>{formatRupiah(item.price_idr)}</small></span>
+              <ArrowUpRight size={16}/>
+            </button>)}
+            <div className="duy-hero-controls">
+              <button type="button" onClick={()=>changeSlide(-1)} aria-label="Makanan sebelumnya"><ChevronLeft size={19}/><span>Prev</span></button>
+              <span className="duy-progress-track"><i key={active} style={{animationPlayState:paused?'paused':'running'}}/></span>
+              <button type="button" onClick={()=>changeSlide(1)} aria-label="Makanan selanjutnya"><span>Next</span><ChevronRight size={19}/></button>
+              <button className="duy-pause" type="button" onClick={()=>setManualPaused(x=>!x)} aria-label={paused?'Putar carousel':'Jeda carousel'}>{paused?<Play size={15}/>:<Pause size={15}/>}</button>
+            </div>
           </div>
         </div>
-        <div className="market-hero-ground" aria-hidden="true"/>
+        <div className="container duy-hero-bottom"><span><Sparkles size={15}/> HOMEMADE • FRESHLY PREPARED</span><span>PALEMBANG, SUMATERA SELATAN</span><a href="#menu">SCROLL TO DISCOVER ↓</a></div>
       </section>
 
       <section className="market-quick-categories" aria-label="Jelajahi kategori">
@@ -169,9 +171,13 @@ export default function Storefront({products, live}:{products:Product[];live:boo
           <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
           <label className="market-search"><Search size={17}/><input type="search" placeholder="Cari hidangan..." aria-label="Cari menu makanan" value={search} onChange={event=>{setSearch(event.target.value);setShowAll(false)}}/></label>
         </div>
-        <div className="market-product-grid">{visible.map((product,index)=><article key={product.slug} className="market-product-card" style={{animationDelay:(Math.min(index,7)*55)+'ms'}}>
-          <div className="market-product-card-visual"><ProductVisual product={product}/>{product.featured&&<span className="market-product-flag">Pilihan dapur</span>}<button type="button" aria-label={'Tambah '+product.name+' ke keranjang'} title={'Tambah '+product.name} className="market-product-add" onClick={()=>addToCart(product.slug)}><ShoppingBag size={18}/></button></div>
-          <div className="market-product-details"><span className="market-product-category">{product.category}</span><h3><button className="product-detail-trigger" type="button" onClick={()=>setSelectedProduct(product)}>{product.name} <ArrowUpRight size={15}/></button></h3><p>{product.description}</p><div className="market-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>addToCart(product.slug)}>Tambah <Plus size={16}/></button></div></div>
+        <div className="duy-product-grid">{visible.map((product,index)=><article key={product.slug} className="duy-product-card" style={{animationDelay:(Math.min(index,7)*65)+'ms'}}>
+          <div className="duy-product-image">
+            {product.featured&&<span className="duy-featured-label">OUR FAVORITE</span>}
+            <button className="duy-product-visual-trigger" type="button" onClick={()=>{setSelectedProduct(product);setDetailQty(1)}} aria-label={'Lihat detail '+product.name}><ProductVisual product={product}/></button>
+            <button type="button" className="duy-quick-cart" onClick={()=>addToCart(product.slug)} aria-label={'Tambahkan '+product.name}><Plus size={20}/></button>
+          </div>
+          <div className="duy-product-content"><span>{product.category}</span><h3><button type="button" onClick={()=>{setSelectedProduct(product);setDetailQty(1)}}>{product.name} <ArrowUpRight size={15}/></button></h3><p>{product.description}</p><div className="duy-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>{setSelectedProduct(product);setDetailQty(1)}}>Lihat menu <ArrowRight size={16}/></button></div></div>
         </article>)}</div>
         {filtered.length===0&&<div className="market-empty-result"><Search size={27}/><h3>Menu tidak ditemukan</h3><p>Coba kategori atau kata kunci lain.</p></div>}
         {filtered.length>8&&<div className="market-view-all"><button type="button" onClick={()=>setShowAll(!showAll)}>{showAll?'Tampilkan lebih sedikit':'Lihat semua '+filtered.length+' menu'} <ChevronDown className={showAll?'market-chevron-up':''} size={17}/></button></div>}
@@ -232,7 +238,34 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · Fotografi situs lama, direstorasi dari arsip GitHub</span></div>
     </div></footer>
 
-    {selectedProduct&&<div className="product-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedProduct(null)}}><section className="product-modal" role="dialog" aria-modal="true" aria-label={'Detail '+selectedProduct.name}><button className="product-modal-close" onClick={()=>setSelectedProduct(null)} aria-label="Tutup detail"><X size={22}/></button><div className="product-modal-visual"><ProductVisual product={selectedProduct} hero/></div><div className="product-modal-body"><span className="market-product-category">{selectedProduct.category}</span><h2>{selectedProduct.name}</h2><p>{selectedProduct.description}</p><strong className="product-modal-price">{formatRupiah(selectedProduct.price_idr)}</strong><p className="checkout-note">Informasi komposisi dan alergen akan diperbarui setelah konfirmasi dari dapur.</p><button className="market-button market-button--primary" onClick={()=>{addToCart(selectedProduct.slug);setSelectedProduct(null)}}>Tambah ke keranjang <Plus size={18}/></button></div></section></div>}
+    {selectedProduct&&<div className="duy-dialog-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedProduct(null)}}>
+      <section className="duy-detail-dialog" role="dialog" aria-modal="true" aria-label={'Detail '+selectedProduct.name}>
+        <div className="duy-detail-photo">
+          <span className="duy-detail-deco" aria-hidden="true">FRESH FROM OUR KITCHEN</span>
+          <ProductVisual product={selectedProduct} hero/>
+          <div className="duy-detail-photo-caption"><span>MADE WITH LOVE</span><strong>Homemade,<br/>for you.</strong></div>
+        </div>
+        <div className="duy-detail-info">
+          <button type="button" className="duy-dialog-close" aria-label="Tutup detail" onClick={()=>setSelectedProduct(null)}><X size={21}/></button>
+          <span className="duy-kicker">{selectedProduct.category} / DETAIL MENU</span>
+          <h2>{selectedProduct.name}</h2>
+          <div className="duy-detail-summary"><span><Leaf size={16}/> Masakan rumahan</span><span><Clock3 size={16}/> Pesan terjadwal</span></div>
+          <p>{selectedProduct.description}</p>
+          <div className="duy-detail-inclusions">
+            <div><strong>Informasi pesanan</strong><small>Disesuaikan dengan kebutuhanmu</small></div>
+            <div className="duy-detail-row"><span>Harga referensi per porsi</span><strong>{formatRupiah(selectedProduct.price_idr)}</strong></div>
+            <div className="duy-detail-row"><span>Komposisi & alergen</span><small>Belum diverifikasi oleh dapur</small></div>
+            <div className="duy-detail-row"><span>Ketersediaan</span><small>Konfirmasi melalui jadwal checkout</small></div>
+          </div>
+          <div className="duy-detail-checkout">
+            <div className="duy-quantity"><button type="button" aria-label="Kurangi jumlah" disabled={detailQty<=1} onClick={()=>setDetailQty(n=>Math.max(1,n-1))}><Minus size={16}/></button><strong>{detailQty}</strong><button type="button" aria-label="Tambah jumlah" disabled={detailQty>=50} onClick={()=>setDetailQty(n=>Math.min(50,n+1))}><Plus size={16}/></button></div>
+            <button type="button" className="duy-detail-add" onClick={()=>{for(let i=0;i<detailQty;i++)cart.add(selectedProduct.slug);setSelectedProduct(null);setDrawer(true)}}>Tambah {formatRupiah(selectedProduct.price_idr*detailQty)} <ArrowRight size={18}/></button>
+          </div>
+          <small className="duy-detail-disclaimer">Harga arsip untuk demo. Pembayaran simulasi, tidak ada transaksi uang asli.</small>
+        </div>
+      </section>
+    </div>}
+    <nav className="duy-mobile-dock" aria-label="Navigasi cepat mobile"><a href="#beranda" aria-label="Beranda"><UtensilsCrossed size={20}/><span>Home</span></a><a href="#menu" aria-label="Menu makanan"><Search size={20}/><span>Menu</span></a><button type="button" aria-label="Keranjang" onClick={()=>setDrawer(true)}><ShoppingBag size={20}/><span>Cart {cart.count>0?'('+cart.count+')':''}</span></button><Link href="/account" aria-label="Akun"><HeartHandshake size={20}/><span>Akun</span></Link></nav>
     {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}>
       <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="market-cart-title">
         <div className="drawer-head"><div><span className="market-eyebrow">PILIHAN KAMU</span><h2 id="market-cart-title">Keranjang <span>({cart.count})</span></h2></div><button type="button" className="icon-button" aria-label="Tutup keranjang" onClick={()=>setDrawer(false)}><X/></button></div>
