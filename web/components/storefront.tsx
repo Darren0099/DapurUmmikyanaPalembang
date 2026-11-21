@@ -13,8 +13,8 @@ import { useCart } from '@/components/cart-provider';
 import ProductVisual from '@/components/product-visual';
 import ServiceCards from '@/components/service-cards';
 
-const waPhone = '6281268552388';
-const whatsappUrl = (message:string) => 'https://wa.me/'+waPhone+'?text='+encodeURIComponent(message);
+
+
 const archiveQuotes = [
   'Menu Makanannya beragam, jadi pengen pesen lagi mana murah di kantong.',
   'Menu nya enak-enak, apalagi ayam bakar nya. Favorit banget tuh menunya!',
@@ -25,7 +25,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const [category, setCategory] = useState('Semua');
   const [search, setSearch] = useState('');
   const [showAll, setShowAll] = useState(false);
-  const [drawer, setDrawer] = useState(false);
+  const [drawer, setDrawer] = useState(false);const [selectedProduct,setSelectedProduct]=useState<Product|null>(null);
   const [mobileNav, setMobileNav] = useState(false);
   const [active, setActive] = useState(0);
   const [hoverPaused, setHoverPaused] = useState(false);
@@ -57,11 +57,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const chosen = cart.items.map(item=>({item,product:products.find(p=>p.slug===item.slug)}))
     .filter((item):item is {item:typeof cart.items[number];product:Product}=>Boolean(item.product));
   const subtotal = chosen.reduce((sum,{item,product})=>sum+product.price_idr*item.quantity,0);
-  const whatsAppMessage = chosen.length
-    ? 'Halo Dapur Ummi Kyana, mohon konfirmasi ketersediaan dan harga menu berikut:\n'+
-      chosen.map(({item,product})=>'- '+product.name+' × '+item.quantity).join('\n')+
-      '\n\nMohon rincian harga final, pengiriman, dan cara pembayaran. Terima kasih.'
-    : 'Halo Dapur Ummi Kyana, saya ingin bertanya tentang menu dan pemesanan.';
+
 
   useEffect(()=>{
     if(paused || featured.length<2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -87,7 +83,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         <a href="#tentang" onClick={()=>setMobileNav(false)}>Tentang</a>
       </nav>
       <div className="market-nav-actions">
-        <a className="market-contact-link" href={whatsappUrl('Halo Dapur Ummi Kyana! Saya ingin bertanya tentang pemesanan.')} target="_blank" rel="noopener noreferrer">Pesan via WhatsApp <ArrowUpRight size={15}/></a>
+        <Link className="market-contact-link" href="/account">Pesanan saya <ArrowUpRight size={15}/></Link>
         <button type="button" className="market-cart-button" aria-label={'Buka keranjang, '+cart.count+' item'} onClick={()=>setDrawer(true)}><ShoppingBag size={21}/>{cart.count>0&&<span className="market-cart-badge">{cart.count}</span>}</button>
         <button type="button" className="market-mobile-trigger" aria-label={mobileNav?'Tutup menu':'Buka menu'} aria-expanded={mobileNav} onClick={()=>setMobileNav(!mobileNav)}>{mobileNav?<X size={22}/>:<Menu size={22}/>}</button>
       </div>
@@ -175,7 +171,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
         </div>
         <div className="market-product-grid">{visible.map((product,index)=><article key={product.slug} className="market-product-card" style={{animationDelay:(Math.min(index,7)*55)+'ms'}}>
           <div className="market-product-card-visual"><ProductVisual product={product}/>{product.featured&&<span className="market-product-flag">Pilihan dapur</span>}<button type="button" aria-label={'Tambah '+product.name+' ke keranjang'} title={'Tambah '+product.name} className="market-product-add" onClick={()=>addToCart(product.slug)}><ShoppingBag size={18}/></button></div>
-          <div className="market-product-details"><span className="market-product-category">{product.category}</span><h3>{product.name}</h3><p>{product.description}</p><div className="market-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>addToCart(product.slug)}>Tambah <Plus size={16}/></button></div></div>
+          <div className="market-product-details"><span className="market-product-category">{product.category}</span><h3><button className="product-detail-trigger" type="button" onClick={()=>setSelectedProduct(product)}>{product.name} <ArrowUpRight size={15}/></button></h3><p>{product.description}</p><div className="market-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>addToCart(product.slug)}>Tambah <Plus size={16}/></button></div></div>
         </article>)}</div>
         {filtered.length===0&&<div className="market-empty-result"><Search size={27}/><h3>Menu tidak ditemukan</h3><p>Coba kategori atau kata kunci lain.</p></div>}
         {filtered.length>8&&<div className="market-view-all"><button type="button" onClick={()=>setShowAll(!showAll)}>{showAll?'Tampilkan lebih sedikit':'Lihat semua '+filtered.length+' menu'} <ChevronDown className={showAll?'market-chevron-up':''} size={17}/></button></div>}
@@ -228,11 +224,11 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <div className="market-how-grid"><div><span>01</span><ShoppingBag size={28}/><h3>Pilih menu favorit</h3><p>Jelajahi hidangan dan masukkan pilihan ke keranjang.</p></div><div><span>02</span><HeartHandshake size={28}/><h3>Konfirmasi pesanan</h3><p>Hubungi penjual untuk memastikan stok, harga, dan kebutuhan acara.</p></div><div><span>03</span><Clock3 size={28}/><h3>Tentukan pembayaran</h3><p>Ikuti informasi pembayaran resmi dari pengelola. Pembayaran otomatis belum diaktifkan.</p></div></div>
       </div></section>
 
-      <section className="market-final-cta"><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Hubungi kami untuk mengetahui menu yang tersedia hari ini.</p></div><a className="market-button market-button--cream" href={whatsappUrl(whatsAppMessage)} target="_blank" rel="noopener noreferrer">Tanya & pesan sekarang <ArrowUpRight size={19}/></a></div></section>
+      <section className="market-final-cta"><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Hubungi kami untuk mengetahui menu yang tersedia hari ini.</p></div><a className="market-button market-button--cream" href="#menu">Pilih menu sekarang <ArrowUpRight size={19}/></a></div></section>
     </main>
 
     <footer className="market-footer"><div className="container">
-      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark market-brand-mark--archive"><Image src="/archive/brand/logo12.jpg" alt="" width={44} height={44}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#galeri">Galeri</a><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><a href={whatsappUrl('Halo Dapur Ummi Kyana!')} target="_blank" rel="noopener noreferrer">WhatsApp <ArrowUpRight size={13}/></a><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
+      <div className="market-footer-grid"><div><div className="market-brand market-footer-brand"><span className="market-brand-mark market-brand-mark--archive"><Image src="/archive/brand/logo12.jpg" alt="" width={44} height={44}/></span><span><strong>Dapur Ummi Kyana</strong><small>HOMEMADE • PALEMBANG</small></span></div><p>Diracik dengan sepenuh hati, untuk setiap meja dan cerita.</p></div><div><strong>Jelajahi</strong><a href="#menu">Menu</a><Link href="/layanan">Paket & Catering</Link><a href="#galeri">Galeri</a><a href="#tentang">Tentang Kami</a></div><div><strong>Informasi</strong><a href="#cara-pesan">Cara memesan</a><Link href="/account">Status pesanan <ArrowUpRight size={13}/></Link><span>Palembang, Indonesia</span></div><div><strong>Akun</strong><Link href="/account">Akun & Pesanan</Link><Link href="/login">Masuk pelanggan</Link><Link href="/admin">Panel admin</Link></div></div>
       <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · Fotografi situs lama, direstorasi dari arsip GitHub</span></div>
     </div></footer>
 
@@ -240,7 +236,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="market-cart-title">
         <div className="drawer-head"><div><span className="market-eyebrow">PILIHAN KAMU</span><h2 id="market-cart-title">Keranjang <span>({cart.count})</span></h2></div><button type="button" className="icon-button" aria-label="Tutup keranjang" onClick={()=>setDrawer(false)}><X/></button></div>
         <div className="drawer-items">{chosen.length ? chosen.map(({item,product})=><div className="drawer-item" key={product.slug}><ProductVisual product={product} compact/><div className="drawer-item-text"><strong>{product.name}</strong><span>{formatRupiah(product.price_idr)}</span><div className="qty"><button type="button" aria-label={'Kurangi '+product.name} onClick={()=>cart.subtract(product.slug)}><Minus size={14}/></button><span>{item.quantity}</span><button type="button" aria-label={'Tambah '+product.name} onClick={()=>cart.add(product.slug)}><Plus size={14}/></button></div></div><button type="button" className="remove-item" aria-label={'Hapus '+product.name} onClick={()=>cart.remove(product.slug)}><X size={16}/></button></div>) : <div className="drawer-empty"><ShoppingBag size={44}/><h3>Keranjang masih kosong</h3><p>Pilih hidangan yang ingin dipesan terlebih dahulu.</p><button type="button" className="market-button market-button--outline" onClick={()=>setDrawer(false)}>Jelajahi menu</button></div>}</div>
-        <div className="drawer-footer"><div className="subtotal"><span>{live?'Subtotal':'Subtotal referensi'}</span><strong>{formatRupiah(subtotal)}</strong></div><p>{live?'Belum termasuk ongkos kirim.':'Harga arsip perlu dikonfirmasi penjual; belum termasuk ongkir.'}</p>{live ? <Link href="/checkout" className={'market-button market-button--primary market-button--full '+(!chosen.length?'market-disabled':'')} aria-disabled={!chosen.length} onClick={event=>{if(!chosen.length)event.preventDefault()}}>Lanjut checkout <ArrowRight size={17}/></Link> : <a className={'market-button market-button--primary market-button--full '+(!chosen.length?'market-disabled':'')} href={whatsappUrl(whatsAppMessage)} target="_blank" rel="noopener noreferrer" aria-disabled={!chosen.length} onClick={event=>{if(!chosen.length)event.preventDefault()}}>Konfirmasi via WhatsApp <ArrowUpRight size={17}/></a>}</div>
+        <div className="drawer-footer"><div className="subtotal"><span>{live?'Subtotal':'Subtotal referensi'}</span><strong>{formatRupiah(subtotal)}</strong></div><p>{live?'Belum termasuk ongkos kirim.':'Harga arsip perlu dikonfirmasi penjual; belum termasuk ongkir.'}</p>{live ? <Link href="/checkout" className={'market-button market-button--primary market-button--full '+(!chosen.length?'market-disabled':'')} aria-disabled={!chosen.length} onClick={event=>{if(!chosen.length)event.preventDefault()}}>Lanjut checkout <ArrowRight size={17}/></Link> : <span className="market-button market-button--primary market-button--full market-disabled" role="status">Checkout menunggu aktivasi toko</span>}</div>
       </aside>
     </div>}
   </div>;
