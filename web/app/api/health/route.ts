@@ -6,6 +6,6 @@ export function GET(){
     status:'online',
     catalog:hasPublicDatabase?'database-configured':'legacy-preview',
     checkout:hasServerDatabase?'configured':'disabled',
-    payment:'manual-confirmation-only',
+    payment:'demo-only-no-real-money',backend:'cloudflare-d1',
   },{headers:{'Cache-Control':'no-store'}});
 }
