@@ -109,3 +109,22 @@ alter table public.orders add constraint orders_payment_method_check check (paym
 alter table public.orders alter column payment_method set default 'demo';
 
 alter table public.orders add column if not exists scheduled_for timestamptz;
+
+create table if not exists public.catering_requests (
+ id uuid primary key default gen_random_uuid(),
+ user_id uuid not null references auth.users(id) on delete restrict,
+ service_slug text not null check (service_slug in ('daily-catering','snack-box','tumpeng-mini','prasmanan-gubukan')),
+ package_name text not null default '',
+ quantity integer not null check (quantity between 1 and 5000),
+ scheduled_for timestamptz not null,
+ phone text not null,
+ address text not null,
+ notes text not null default '',
+ status text not null default 'requested' check(status in ('requested','reviewing','approved','declined')),
+ created_at timestamptz not null default now()
+);
+create index if not exists idx_catering_requests_created on public.catering_requests(created_at desc);
+alter table public.catering_requests enable row level security;
+create policy "Customer reads own catering requests" on public.catering_requests for select to authenticated using (user_id=(select auth.uid()));
+revoke all on public.catering_requests from anon, authenticated;
+grant select on public.catering_requests to authenticated;
