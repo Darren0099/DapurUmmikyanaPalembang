@@ -1,6 +1,6 @@
 # Dapur Ummi Kyana — Modern E-Commerce v2
 
-**Versi modern (Next.js 16, React 19, TypeScript, Supabase-ready, Vercel) tersedia di folder [\`web/\`](web/).** Kode PHP/MySQL lama tetap dipertahankan untuk arsip dan migrasi data.
+**Versi modern (Next.js 16, React 19, TypeScript, Cloudflare D1 + Workers, Vercel) tersedia di folder [\`web/\`](web/).** Kode PHP/MySQL lama tetap dipertahankan untuk arsip dan migrasi data.
 
 - [Dokumentasi aplikasi modern](web/README.md)
 - [Audit sistem lama dan keputusan arsitektur](MODERNIZATION_AUDIT.md)
@@ -8,7 +8,9 @@
 - [Layanan dengan halaman masing-masing](web/app/layanan)
 - [SQL schema Supabase](web/supabase/schema.sql)
 
-> Status pembayaran: **Midtrans QRIS memiliki bukti riwayat transaksi merchant pada Januari 2025, tetapi API Midtrans belum terhubung ke versi modern**. DANA QR pada PHP lama adalah simulasi. Checkout database memerlukan project Supabase khusus. Tanpa kredensial, storefront berada dalam mode preview data historis dan mendukung konfirmasi melalui WhatsApp. Jangan memproses transaksi real menggunakan QR simulasi dari versi PHP.
+> Status pembayaran: **Midtrans QRIS memiliki bukti riwayat transaksi merchant pada Januari 2025, tetapi API Midtrans belum terhubung ke versi modern**. DANA QR pada PHP lama adalah simulasi. Checkout DEMO kini menggunakan Cloudflare D1 melalui Worker. Katalog memiliki 18 menu arsip dengan harga simulasi, bukan penawaran komersial aktif. Jangan memproses transaksi real menggunakan QR simulasi dari versi PHP.
+
+**Infrastruktur terbaru:** [D1 schema + Worker + petunjuk setup](web/cloudflare/README.md). Pembayaran hanya simulasi tanpa uang sungguhan; akun admin harus dipromosikan secara manual setelah registrasi.
 
 ---
 
