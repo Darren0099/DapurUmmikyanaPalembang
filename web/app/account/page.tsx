@@ -2,14 +2,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Clock3, CreditCard, PackageCheck, UserRound, MapPin, LogOut } from 'lucide-react';
-import { browserSupabase } from '@/lib/supabase';
+import { browserStoreAuth } from '@/lib/auth-client';
 import { formatRupiah } from '@/lib/catalog';
 
 type Catering = {id:string;service_slug:string;package_name:string;quantity:number;scheduled_for:string;status:string};
 type Item = { product_name: string; quantity: number; line_total_idr: number };
 type Order = { id:string; customer_name:string; customer_phone:string; fulfillment:string; delivery_address:string|null; total_idr:number; payment_method:string; payment_status:string; status:string; scheduled_for?:string|null; created_at:string; order_items:Item[] };
 export default function AccountPage(){
- const client=useMemo(()=>browserSupabase(),[]);
+ const client=useMemo(()=>browserStoreAuth(),[]);
  const [orders,setOrders]=useState<Order[]>([]);const [catering,setCatering]=useState<Catering[]>([]);
  const [email,setEmail]=useState('');
  const [loading,setLoading]=useState(true);
