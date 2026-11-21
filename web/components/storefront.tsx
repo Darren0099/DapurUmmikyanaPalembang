@@ -69,7 +69,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const addToCart = (slug:string) => { cart.add(slug); setDrawer(true); };
 
   return <div className="market-root">
-    <div className="market-topline"><div className="container market-topline-content"><span><Sparkles size={13}/> Cita rasa rumahan dari Palembang</span><span><MapPin size={13}/> Palembang, Sumatera Selatan</span></div></div>
+    <div className="market-topline"><div className="container market-topline-content"><span><Sparkles size={13}/> DEMO TOKO — pembayaran simulasi, harga menu referensi arsip</span><span><MapPin size={13}/> Palembang, Sumatera Selatan</span></div></div>
     <header className="market-header"><div className="container market-nav">
       <Link className="market-brand" href="/" aria-label="Dapur Ummi Kyana — beranda">
         <span className="market-brand-mark market-brand-mark--archive"><Image src="/archive/brand/logo12.jpg" alt="" width={44} height={44} priority/></span>
@@ -112,7 +112,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
               <div className="market-hero-disc" aria-hidden="true"/>
               <div className="market-hero-sticker"><span>PILIHAN</span><strong>{String(active+1).padStart(2,'0')}</strong><small>/ {String(featured.length).padStart(2,'0')}</small></div>
               {current&&<div key={current.slug} className="market-hero-product"><ProductVisual product={current} hero/></div>}
-              <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Lihat harga dan stok pada katalog':'Harga merupakan referensi arsip; konfirmasi ke penjual'}</small></div>
+              <div className="market-hero-caption"><span>PILIHAN DARI KATALOG</span><strong>{current?.name||'Dapur Ummi Kyana'}</strong><small>{live?'Harga simulasi, cek isi katalog':'Harga demo dari katalog arsip; bukan penawaran aktif'}</small></div>
               <div className="market-hero-stage-note" aria-hidden="true">HOME-COOKED FOOD · PALEMBANG</div>
               <span className="market-hero-orbit-label" aria-hidden="true">FROM OUR 2025 ARCHIVE</span>
             </div>
@@ -164,7 +164,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
       <section className="market-catalog-section" id="menu"><div className="container">
         <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi menu, pilih porsi, dan selesaikan checkout demo langsung di website.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
-        {!live&&<div className="market-menu-note"><Check size={18}/><p><strong>Pratinjau katalog lama.</strong> Harga merupakan referensi historis, bukan penawaran aktif. Konfirmasikan harga dan ketersediaan sebelum membeli. Foto berasal dari aset website arsip 2025; menu, komposisi, dan harga terkini tetap perlu dikonfirmasi.</p></div>}
+        {<div className="market-menu-note"><Check size={18}/><p><strong>Mode demo.</strong> Harga merupakan referensi historis dan bukan penawaran aktif. Pembayaran hanya simulasi tanpa uang asli. Foto berasal dari aset website arsip 2025; menu, komposisi, dan harga terkini tetap perlu dikonfirmasi.</p></div>}
         <div className="market-product-toolbar">
           <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
           <label className="market-search"><Search size={17}/><input type="search" placeholder="Cari hidangan..." aria-label="Cari menu makanan" value={search} onChange={event=>{setSearch(event.target.value);setShowAll(false)}}/></label>
@@ -224,7 +224,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <div className="market-how-grid"><div><span>01</span><ShoppingBag size={28}/><h3>Pilih menu favorit</h3><p>Jelajahi hidangan dan masukkan pilihan ke keranjang.</p></div><div><span>02</span><HeartHandshake size={28}/><h3>Konfirmasi pesanan</h3><p>Hubungi penjual untuk memastikan stok, harga, dan kebutuhan acara.</p></div><div><span>03</span><Clock3 size={28}/><h3>Tentukan pembayaran</h3><p>Ikuti informasi pembayaran resmi dari pengelola. Pembayaran otomatis belum diaktifkan.</p></div></div>
       </div></section>
 
-      <section className="market-final-cta"><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Hubungi kami untuk mengetahui menu yang tersedia hari ini.</p></div><a className="market-button market-button--cream" href="#menu">Pilih menu sekarang <ArrowUpRight size={19}/></a></div></section>
+      <section className="market-final-cta"><div className="container market-final-inner"><div><span className="market-eyebrow">SIAP UNTUK MENIKMATI?</span><h2>Rasa istimewa, <em>berawal di sini.</em></h2><p>Pilih hidangan favorit, lalu coba checkout langsung di website tanpa transaksi uang sungguhan.</p></div><a className="market-button market-button--cream" href="#menu">Pilih menu sekarang <ArrowUpRight size={19}/></a></div></section>
     </main>
 
     <footer className="market-footer"><div className="container">
