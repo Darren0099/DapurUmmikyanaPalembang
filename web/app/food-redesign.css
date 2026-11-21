@@ -206,7 +206,7 @@
 @keyframes duyMorph{from{opacity:0;transform:translateY(34px) scale(.87);border-radius:70px}to{opacity:1;transform:translateY(0) scale(1);border-radius:34px}}
 @keyframes duyDishIn{from{opacity:0;transform:translateY(28px) scale(.8) rotate(-13deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
 @keyframes duyProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes duyCardUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes duyCardUp{from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes duyAuthSwap{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes duyFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(1deg)}}
 @media(max-width:1180px){
@@ -311,3 +311,25 @@
  .duy-hero-dish,.duy-product-card,.duy-detail-dialog,.duy-dialog-backdrop,.duy-auth-title,.duy-auth-art,.duy-progress-track i{animation:none!important}
  .duy-choice,.duy-quick-cart,.duy-product-card,.duy-product-visual-trigger{transition:none!important}
 }
+
+/* Viewport-triggered reveals: content remains visible without JavaScript */
+@media(prefers-reduced-motion:no-preference){
+ .market-root .duy-reveal{opacity:0;transform:translateY(24px);transition:opacity .75s cubic-bezier(.2,.8,.2,1),transform .75s cubic-bezier(.2,.8,.2,1)}
+ .market-root .duy-reveal.duy-revealed{opacity:1;transform:translateY(0)}
+}
+.duy-auth-form{animation:duyAuthSwap .38s ease both}
+.duy-hero-center .market-visual--hero{max-width:none}
+.market-root .market-section-head{gap:35px}
+.market-root .market-section-head h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(42px,4.3vw,68px);font-weight:400;line-height:1.08;letter-spacing:-.055em}
+.market-root .market-quick-categories{background:#fff;padding-top:24px;padding-bottom:38px}
+.market-root .market-shortcut-card{background:#fafbf9;border-color:#eceeea;box-shadow:0 5px 20px #14231607}
+.market-root .market-shortcut-icon{background:#fff3e6;color:#ee7e27;border-radius:50%}
+.market-root .market-editorial-picks{background:#fff;padding-top:36px;padding-bottom:90px}
+.market-root .market-editorial-pick{border-radius:28px;overflow:hidden}
+.market-root .market-offer-section{border-radius:0;background:#f7f9f5}
+.market-root .service-card--enhanced{background:#fff;border:1px solid #eef0eb;border-radius:23px;box-shadow:0 10px 30px #14251b09;transition:transform .35s,box-shadow .35s}
+.market-root .service-card--enhanced:hover{transform:translateY(-6px);box-shadow:0 23px 40px #14251b16}
+.market-root .market-gallery-tile{border-radius:25px;overflow:hidden}
+.market-root .market-gallery-image{transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+.market-root .market-gallery-tile:hover .market-gallery-image{transform:scale(1.03)}
+@media(max-width:700px){.market-root .market-section-head h2{font-size:clamp(36px,8vw,46px)}.market-root .market-quick-categories{padding-top:14px}.market-root .market-editorial-picks{padding-bottom:54px}}
