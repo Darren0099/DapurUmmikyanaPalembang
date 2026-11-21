@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight, CalendarDays, ChefHat, Gift, HandPlatter, type LucideIcon } from 'lucide-react';
-import { services, serviceInquiryUrl, type Service } from '@/lib/services';
+import { services, type Service } from '@/lib/services';
 
 const icons:Record<Service['slug'],LucideIcon> = {
   'daily-catering': CalendarDays,
@@ -27,7 +27,7 @@ export default function ServiceCards({compact=false}:{compact?:boolean}) {
         <span className="service-card-watermark" aria-hidden="true">{service.index}</span>
         <div className="service-actions">
           <Link className="service-detail-link" href={`/layanan/${service.slug}`}>Lihat detail <ArrowUpRight size={16} aria-hidden="true"/></Link>
-          <a className="service-inquiry-link" href={serviceInquiryUrl(service)} target="_blank" rel="noopener noreferrer">Tanyakan paket</a>
+          <Link className="service-inquiry-link" href={`/layanan/${service.slug}#form-paket`}>Ajukan paket</Link>
         </div>
       </article>;
     })}
