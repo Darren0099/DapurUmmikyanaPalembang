@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { storeGet } from './store-api';
 
 export type Product = {
   id: string;
@@ -41,22 +41,16 @@ export const legacyProducts: Product[] = [
 export function formatRupiah(value: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 }
-export const hasPublicDatabase = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
-export const hasServerDatabase = hasPublicDatabase && Boolean(process.env.SUPABASE_SECRET_KEY);
+export const hasPublicDatabase = Boolean(process.env.STORE_API_URL);
+export const hasServerDatabase = hasPublicDatabase;
 
 export async function loadProducts(): Promise<{ products: Product[]; live: boolean }> {
-  if (!hasPublicDatabase) return { products: legacyProducts, live: false };
-  try {
-    const client = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data, error } = await client.from('products')
-      .select('id,slug,name,category,description,price_idr,active,featured,accent,image_url')
-      .eq('active', true).order('featured', { ascending: false }).order('created_at', { ascending: false });
-    if (error) throw error;
-    return { products: (data ?? []) as Product[], live: true };
-  } catch {
-    // Fail closed if a live catalog cannot be accessed; no stale sale prices.
-    return { products: [], live: false };
+  if (!hasServerDatabase) return {products:legacyProducts,live:false};
+  try{
+    const result=await storeGet('/products');
+    return {products:(result.products||[]) as Product[],live:result.live===true};
+  }catch{
+    // Fail closed: historical prices must never be used as live prices.
+    return {products:legacyProducts,live:false};
   }
 }
