@@ -1,8 +1,9 @@
+import CateringRequest from '@/components/catering-request';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, MessageCircle, ShieldCheck, UtensilsCrossed } from 'lucide-react';
-import { serviceBySlug, serviceInquiryUrl, services } from '@/lib/services';
+import { serviceBySlug, services } from '@/lib/services';
 
 export function generateStaticParams(){return services.map(({slug})=>({slug}));}
 export const dynamicParams = false;
@@ -28,7 +29,7 @@ export default async function ServiceDetailPage({params}:{params:Promise<{slug:s
        <span className="eyebrow">LAYANAN {service.index} / DAPUR UMMI KYANA</span>
        <h1>{service.name}<span className="service-heading-dot">.</span></h1>
        <p>{service.description} Informasi pada halaman ini adalah arsip penawaran lama dan belum dikonfirmasi sebagai penawaran aktif.</p>
-       <a className="btn btn-primary service-hero-btn" href={serviceInquiryUrl(service)} target="_blank" rel="noopener noreferrer">Tanyakan paket via WhatsApp <ArrowUpRight size={17}/></a>
+       <a className="btn btn-primary service-hero-btn" href="#form-paket">Ajukan paket di website <ArrowRight size={17}/></a>
      </div><div className={'service-hero-mark '+(service.photo?'service-hero-mark--photo':'')}>{service.photo?<><img src={service.photo} alt={'Dokumentasi visual arsip '+service.name} loading="eager"/><small>FOTO ARSIP · 2025</small></>:<><span>{service.index} / 04</span><UtensilsCrossed size={72} strokeWidth={1} aria-hidden="true"/><small>SEJAK DAPUR LAMA</small></>}</div></div>
    </div></header>
    <section className="service-page-content section-spacing"><div className="container service-detail-layout">
@@ -46,14 +47,15 @@ export default async function ServiceDetailPage({params}:{params:Promise<{slug:s
            <div className="service-legacy-package" key={option.name}>
              <span>0{index+1} / ARSIP</span><strong>{option.name}</strong><b>{option.price}</b>
              <ul>{option.items.map(item=><li key={item}><Check size={14}/>{item}</li>)}</ul>
-             <a href={serviceInquiryUrl(service)} target="_blank" rel="noopener noreferrer">Tanyakan paket terkini <ArrowUpRight size={14}/></a>
+             <a href="#form-paket">Ajukan paket <ArrowRight size={14}/></a>
            </div>)}</div>
        </section>}
+       <CateringRequest slug={service.slug} options={service.packages?.map(p=>p.name)||[service.name]}/>
      </article>
      <aside className="service-detail-aside">
        <div className="service-inquiry-panel"><div className="service-inquiry-icon"><MessageCircle size={26}/></div><span className="eyebrow">KONFIRMASI KE DAPUR</span><h2>Tanya harga & ketersediaan.</h2><p>Agar pengelola dapat memberi rincian yang tepat, siapkan informasi berikut:</p>
        <ul>{service.inquiryTips.map(item=><li key={item}><Check size={15}/>{item}</li>)}</ul>
-       <a href={serviceInquiryUrl(service)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-full">Hubungi via WhatsApp <ArrowUpRight size={16}/></a>
+       <a href="#form-paket" className="btn btn-primary btn-full">Buka formulir katering <ArrowRight size={16}/></a>
        <small><ShieldCheck size={15}/> Pembayaran tidak dilakukan melalui halaman ini.</small>
        </div>
      </aside>
