@@ -2,12 +2,12 @@
 import { useEffect,useMemo,useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, CheckCircle2, LockKeyhole, ShoppingBag } from 'lucide-react';
-import { browserSupabase } from '@/lib/supabase';
+import { browserStoreAuth } from '@/lib/auth-client';
 import { useCart } from '@/components/cart-provider';
 import { formatRupiah, type Product } from '@/lib/catalog';
 export const dynamic = 'force-dynamic';
 export default function CheckoutPage(){
- const supabase=useMemo(()=>browserSupabase(),[]);const cart=useCart();
+ const supabase=useMemo(()=>browserStoreAuth(),[]);const cart=useCart();
  const [products,setProducts]=useState<Product[]>([]);const [loading,setLoading]=useState(true);
  const [scheduledFor,setScheduledFor]=useState('');const [name,setName]=useState('');const [phone,setPhone]=useState('');const [fulfillment,setFulfillment]=useState<'pickup'|'delivery'>('pickup');const [address,setAddress]=useState('');const [notes,setNotes]=useState('');
  const [submitting,setSubmitting]=useState(false);const [paying,setPaying]=useState(false);const [error,setError]=useState('');const [success,setSuccess]=useState('');
