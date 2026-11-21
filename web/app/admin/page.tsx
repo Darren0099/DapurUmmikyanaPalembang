@@ -2,7 +2,7 @@
 import { useCallback,useEffect,useMemo,useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowUpRight, BarChart3, Bell, CheckCircle2, ClipboardList, CreditCard, LayoutDashboard, LogOut, Package, Plus, RefreshCcw, Settings, ShoppingBag, TrendingUp, Users, UtensilsCrossed } from 'lucide-react';
-import { browserSupabase } from '@/lib/supabase';
+import { browserStoreAuth } from '@/lib/auth-client';
 import { formatRupiah, type Product } from '@/lib/catalog';
 import ProductVisual from '@/components/product-visual';
 
@@ -14,7 +14,7 @@ const titles:Record<string,string>={overview:'Ringkasan bisnis',orders:'Manajeme
 const navigation=[{key:'overview',label:'Dashboard',icon:LayoutDashboard},{key:'orders',label:'Pesanan',icon:ShoppingBag},{key:'products',label:'Menu & produk',icon:Package},{key:'catering',label:'Permintaan katering',icon:ClipboardList},{key:'payments',label:'Pembayaran',icon:CreditCard},{key:'analytics',label:'Analitik',icon:BarChart3},{key:'settings',label:'Pengaturan',icon:Settings}];
 function badge(status:string){return <span className={`status-badge ${status}`}>{status.replaceAll('_',' ')}</span>}
 export default function AdminPage(){
- const supabase=useMemo(()=>browserSupabase(),[]);
+ const supabase=useMemo(()=>browserStoreAuth(),[]);
  const [section,setSection]=useState('overview');const [orderFilter,setOrderFilter]=useState('all');const [dash,setDash]=useState<Dashboard|null>(null);
  const [loading,setLoading]=useState(true);const [message,setMessage]=useState('');const [authorized,setAuthorized]=useState(false);
  const [name,setName]=useState('');const [price,setPrice]=useState('25000');const [category,setCategory]=useState('Nasi Box');const [adding,setAdding]=useState(false);const [imageUrl,setImageUrl]=useState('');const [photoDrafts,setPhotoDrafts]=useState<Record<string,string>>({});
