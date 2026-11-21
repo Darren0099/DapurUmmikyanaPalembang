@@ -6,7 +6,7 @@ export async function GET(request:Request) {
   const db=serviceSupabase();
   if(!db)return NextResponse.json({error:'Database belum dikonfigurasi.'},{status:503});
   const [orders,products,orderCount]=await Promise.all([
-    db.from('orders').select('id,customer_name,customer_phone,fulfillment,total_idr,subtotal_idr,payment_status,payment_method,status,created_at,delivery_address,notes,user_id').order('created_at',{ascending:false}).limit(100),
+    db.from('orders').select('id,customer_name,customer_phone,fulfillment,total_idr,subtotal_idr,payment_status,payment_method,status,created_at,delivery_address,notes,scheduled_for,user_id').order('created_at',{ascending:false}).limit(100),
     db.from('products').select('id,slug,name,category,description,price_idr,active,featured,accent,image_url,created_at').order('created_at',{ascending:false}).limit(200),
     db.from('orders').select('id',{count:'exact',head:true}),
   ]);
