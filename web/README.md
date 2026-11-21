@@ -1,3 +1,13 @@
+# Dapur Ummi Kyana — Cloudflare D1 Edition (21 November 2026)
+
+**CURRENT ARCHITECTURE:** Next.js on Vercel → Cloudflare Worker API → Cloudflare D1 SQLite. Supabase is no longer used by the active app. See [cloudflare/README.md](cloudflare/README.md) and [cloudflare/schema.sql](cloudflare/schema.sql) for setup, security notes, and operations.
+
+**SAFETY:** Orders and payments are **DEMO ONLY**. The 18 seeded food prices are taken from the historical catalog, not verified offers. No real funds move and no payment gateway is connected. The admin role is assigned deliberately after account registration. Live merchant verification, smoke tests, and order acceptance tests are needed before commercial use.
+
+---
+
+## Archived modernization notes (Supabase-based historical iteration)
+
 # Dapur Ummi Kyana v2 — Modern Storefront & Admin Console
 
 **Modernization track** for `Darren0099/DapurUmmikyanaPalembang`. The original PHP/MySQL application remains untouched at repository root; all new Next.js source lives in `/web` so Vercel can use **Root Directory: `web`**.
