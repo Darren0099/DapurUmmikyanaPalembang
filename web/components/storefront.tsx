@@ -67,6 +67,23 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     return ()=>window.clearInterval(interval);
   },[featured.length,paused]);
 
+  useEffect(()=>{
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced||!('IntersectionObserver' in window))return;
+    const targets=[...document.querySelectorAll<HTMLElement>('.market-quick-categories,.market-editorial-picks,.market-catalog-section,.market-offer-section,.market-service-section,.market-gallery-section,.market-about-section,.market-how-section,.market-final-cta')];
+    const observer=new IntersectionObserver(entries=>{
+      for(const entry of entries){if(entry.isIntersecting){entry.target.classList.add('duy-revealed');observer.unobserve(entry.target)}}
+    },{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+    for(const el of targets){el.classList.add('duy-reveal');observer.observe(el)}
+    return ()=>{observer.disconnect();for(const el of targets)el.classList.remove('duy-reveal','duy-revealed')};
+  },[]);
+  useEffect(()=>{
+    if(!selectedProduct&&!drawer)return;
+    const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){setSelectedProduct(null);setDrawer(false)}};
+    window.addEventListener('keydown',onKey);
+    return ()=>window.removeEventListener('keydown',onKey);
+  },[selectedProduct,drawer]);
+
   const changeSlide = (direction:number) => {if(featured.length<2)return;setActive(index=>(index+direction+featured.length)%featured.length);};
   const addToCart = (slug:string) => { cart.add(slug); setDrawer(true); };
 
