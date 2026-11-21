@@ -10,5 +10,7 @@ export async function GET(request: Request) {
     .select('id,customer_name,customer_phone,fulfillment,delivery_address,notes,subtotal_idr,delivery_fee_idr,total_idr,payment_method,payment_status,status,created_at,paid_at,order_items(product_name,unit_price_idr,quantity,line_total_idr)')
     .eq('user_id', user.id).order('created_at', { ascending: false }).limit(100);
   if (error) return NextResponse.json({ error: 'Gagal memuat pesanan.' }, { status: 500 });
-  return NextResponse.json({ orders: data ?? [] }, { headers: { 'Cache-Control': 'private, no-store' } });
+  const {data:catering,error:cateringError}=await db.from('catering_requests').select('id,service_slug,package_name,quantity,scheduled_for,status,created_at').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100);
+  if(cateringError)return NextResponse.json({error:'Gagal memuat permintaan katering.'},{status:500});
+  return NextResponse.json({ orders: data ?? [], catering: catering ?? [] }, { headers: { 'Cache-Control': 'private, no-store' } });
 }
