@@ -1,5 +1,6 @@
 // Server-only gateway to the Cloudflare Worker backed by D1.
-import 'server-only';
+// Intentionally no server-only import: catalog types are shared by client components.
+// STORE_API_URL is not exposed to the browser; functions are invoked by server routes only.
 export async function storeRequest(request:Request,path:string):Promise<Response>{
  const origin=process.env.STORE_API_URL;
  if(!origin)return Response.json({error:'Database toko belum dikonfigurasi.'},{status:503});
