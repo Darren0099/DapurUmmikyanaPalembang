@@ -30,6 +30,7 @@ create table if not exists public.orders (
   fulfillment text not null check (fulfillment in ('pickup','delivery')),
   delivery_address text,
   notes text not null default '',
+  scheduled_for timestamptz,
   subtotal_idr integer not null check (subtotal_idr > 0),
   delivery_fee_idr integer check (delivery_fee_idr >= 0),
   total_idr integer not null check (total_idr > 0),
@@ -106,3 +107,5 @@ on conflict (slug) do nothing;
 alter table public.orders drop constraint if exists orders_payment_method_check;
 alter table public.orders add constraint orders_payment_method_check check (payment_method in ('manual','demo'));
 alter table public.orders alter column payment_method set default 'demo';
+
+alter table public.orders add column if not exists scheduled_for timestamptz;
