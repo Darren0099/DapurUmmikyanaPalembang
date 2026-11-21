@@ -8,6 +8,7 @@ type CheckoutBody = {
   fulfillment?: 'pickup' | 'delivery';
   delivery_address?: string;
   notes?: string;
+  scheduled_for?: string;
   client_request_id?: string;
 };
 function invalid(message:string, status=400){return NextResponse.json({error:message},{status,headers:{'Cache-Control':'no-store'}})}
@@ -25,6 +26,8 @@ export async function POST(request:Request){
   const phone=String(body.customer_phone||'').replace(/\s|\-/g,'');
   const address=String(body.delivery_address||'').trim().slice(0,500);
   const notes=String(body.notes||'').trim().slice(0,800);
+  const scheduled = body.scheduled_for ? new Date(body.scheduled_for) : null;
+  if(!scheduled || !Number.isFinite(scheduled.getTime()) || scheduled.getTime() < Date.now() + 60*60*1000) return invalid('Pilih jadwal pengambilan atau pengiriman paling cepat satu jam dari sekarang.');
   const fulfillment=body.fulfillment==='delivery'?'delivery':'pickup';
   if(name.length<3||!/^\+?\d{9,16}$/.test(phone)) return invalid('Nama atau nomor telepon tidak valid.');
   if(fulfillment==='delivery'&&address.length<12) return invalid('Alamat pengiriman belum lengkap.');
@@ -43,7 +46,7 @@ export async function POST(request:Request){
   if(!Number.isSafeInteger(subtotal)||subtotal<=0||subtotal>1000000000)return invalid('Total pesanan tidak valid.');
   const {data:order,error:orderError}=await db.from('orders').insert({
     user_id:user.id,client_request_id:body.client_request_id!,customer_name:name,customer_phone:phone,fulfillment,
-    delivery_address:fulfillment==='delivery'?address:null,notes,subtotal_idr:subtotal,total_idr:subtotal,
+    delivery_address:fulfillment==='delivery'?address:null,notes,scheduled_for:scheduled.toISOString(),subtotal_idr:subtotal,total_idr:subtotal,
     delivery_fee_idr:fulfillment==='pickup'?0:null,payment_method:'demo',payment_status:'awaiting_confirmation',status:'pending',
   }).select('id').single();
   if(orderError||!order) {
