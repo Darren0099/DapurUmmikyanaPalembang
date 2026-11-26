@@ -3,6 +3,7 @@ import './globals.css';
 import './editorial.css';
 import './warm-editorial.css';
 import './food-redesign.css';
+import './storefront-vnext.css';
 import { CartProvider } from '@/components/cart-provider';
 
 export const metadata: Metadata = {
