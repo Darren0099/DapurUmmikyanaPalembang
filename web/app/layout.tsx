@@ -4,6 +4,7 @@ import './editorial.css';
 import './warm-editorial.css';
 import './food-redesign.css';
 import './storefront-vnext.css';
+import './food-reference-2026.css';
 import { CartProvider } from '@/components/cart-provider';
 
 export const metadata: Metadata = {
