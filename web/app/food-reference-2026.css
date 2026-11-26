@@ -81,3 +81,24 @@
 }
 @media(max-width:410px){.duy24-editorial-mini-grid{grid-template-columns:1fr}.duy24-editorial-mini{flex-direction:row;min-height:98px}.duy24-editorial-mini-photo{height:80px;width:80px}.duy24-editorial-mini-add{position:static;align-self:end}}
 @media(prefers-reduced-motion:reduce){.duy24-editorial-plate{animation:none!important}.duy24-editorial-mini,.duy24-editorial-text>button{transition:none!important}}
+
+/* Mixed-height magazine collage: inspired by user-provided Flying Food composition */
+.market-root .market-gallery-grid{display:grid;grid-template-columns:1.2fr 1fr .86fr;align-items:start;gap:22px}
+.market-root .market-gallery-tile{min-width:0;position:relative}
+.market-root .market-gallery-tile--0{margin-top:35px}
+.market-root .market-gallery-tile--1{margin-top:0}
+.market-root .market-gallery-tile--2{margin-top:78px}
+.market-root .market-gallery-tile--0 .market-gallery-image{aspect-ratio:3 / 4}
+.market-root .market-gallery-tile--1 .market-gallery-image{aspect-ratio:4 / 5}
+.market-root .market-gallery-tile--2 .market-gallery-image{aspect-ratio:5 / 6}
+.market-root .market-gallery-image img{object-fit:cover}
+.market-root .market-gallery-tile:hover img{transform:scale(1.04)}
+.market-root .market-gallery-caption{padding:22px}
+.market-root .market-gallery-caption h3{font-family:Georgia,serif;font-weight:400;letter-spacing:-.035em}
+.market-root .market-story-grid{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);align-items:center}
+.market-root .market-story-visual{min-height:530px}
+.market-root .market-story-dish{transform:rotate(-6deg);transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+@media(hover:hover) and (pointer:fine){.market-root .market-story-visual:hover .market-story-dish{transform:rotate(0deg) scale(1.03)}}
+@media(max-width:900px){.market-root .market-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.market-root .market-gallery-tile--2{grid-column:1/-1;margin-top:0}.market-root .market-gallery-tile--2 .market-gallery-image{aspect-ratio:16/9}.market-root .market-story-grid{grid-template-columns:1fr}}
+@media(max-width:699px){.market-root .market-gallery-grid{gap:12px}.market-root .market-gallery-tile--0{margin-top:16px}.market-root .market-gallery-tile--2 .market-gallery-image{aspect-ratio:4/3}.market-root .market-gallery-caption{padding:14px}.market-root .market-story-visual{min-height:370px}}
+@media(prefers-reduced-motion:reduce){.market-root .market-story-dish{transition:none!important;transform:none!important}.market-root .market-gallery-image img{transition:none!important}}
