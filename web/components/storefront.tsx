@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { archiveFeatures } from '@/lib/archive-media';
@@ -12,6 +12,10 @@ import { formatRupiah, type Product } from '@/lib/catalog';
 import { useCart } from '@/components/cart-provider';
 import ProductVisual from '@/components/product-visual';
 import ServiceCards from '@/components/service-cards';
+import HeroSection from '@/components/storefront/hero-section';
+import CatalogSection from '@/components/storefront/catalog-section';
+import ProductDetailDialog from '@/components/storefront/product-detail-dialog';
+import { selectFeaturedProducts,filterProducts } from '@/lib/storefront-presentation';
 
 
 
@@ -27,12 +31,9 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   const [showAll, setShowAll] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [selectedProduct,setSelectedProduct]=useState<Product|null>(null);
-  const [detailQty,setDetailQty]=useState(1);
+
   const [mobileNav, setMobileNav] = useState(false);
   const [active, setActive] = useState(0);
-  const [hoverPaused, setHoverPaused] = useState(false);
-  const [manualPaused, setManualPaused] = useState(false);
-  const paused = hoverPaused || manualPaused;
   const [testimonial, setTestimonial] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const archivedGallery = [
@@ -42,30 +43,13 @@ export default function Storefront({products, live}:{products:Product[];live:boo
   ];
 
   const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
-  const featured = useMemo(()=>{
-    // First carousel slide shows a historically listed dish with a matching
-    // illustrative photograph. Real merchant imagery always takes priority.
-    const priority=['nasi-ayam-bakar','nasi-ayam-geprek','nasi-ayam-goreng-lengkuas'];
-    const selected=priority.map(slug=>products.find(p=>p.slug===slug)).filter((p):p is Product=>Boolean(p));
-    const extras=products.filter(p=>p.featured&&!selected.some(x=>x.slug===p.slug));
-    return [...selected,...extras,...products].filter((p,index,all)=>all.findIndex(item=>item.slug===p.slug)===index).slice(0,4);
-  },[products]);
-  const current = featured[active%Math.max(1,featured.length)] || products[0];
-  const filtered = useMemo(()=>
-    products.filter(p=>(category==='Semua'||p.category===category)&&
-      p.name.toLocaleLowerCase('id-ID').includes(search.toLocaleLowerCase('id-ID'))),
-    [products,category,search]);
-  const visible = showAll ? filtered : filtered.slice(0,8);
+  const featured=useMemo(()=>selectFeaturedProducts(products),[products]);
+  const filtered=useMemo(()=>filterProducts(products,category,search),[products,category,search]);
+  const visible=showAll?filtered:filtered.slice(0,8);
   const chosen = cart.items.map(item=>({item,product:products.find(p=>p.slug===item.slug)}))
     .filter((item):item is {item:typeof cart.items[number];product:Product}=>Boolean(item.product));
   const subtotal = chosen.reduce((sum,{item,product})=>sum+product.price_idr*item.quantity,0);
 
-
-  useEffect(()=>{
-    if(paused || featured.length<2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const interval = window.setInterval(()=>setActive(index=>(index+1)%featured.length),6200);
-    return ()=>window.clearInterval(interval);
-  },[featured.length,paused]);
 
   useEffect(()=>{
     const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -77,14 +61,8 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     for(const el of targets){el.classList.add('duy-reveal');observer.observe(el)}
     return ()=>{observer.disconnect();for(const el of targets)el.classList.remove('duy-reveal','duy-revealed')};
   },[]);
-  useEffect(()=>{
-    if(!selectedProduct&&!drawer)return;
-    const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){setSelectedProduct(null);setDrawer(false)}};
-    window.addEventListener('keydown',onKey);
-    return ()=>window.removeEventListener('keydown',onKey);
-  },[selectedProduct,drawer]);
-
-  const changeSlide = (direction:number) => {if(featured.length<2)return;setActive(index=>(index+direction+featured.length)%featured.length);};
+  const changeSlide=useCallback((direction:number)=>setActive(index=>(index+direction+featured.length)%Math.max(1,featured.length)),[featured.length]);
+  const nextSlide=useCallback(()=>setActive(index=>(index+1)%Math.max(1,featured.length)),[featured.length]);
   const addToCart = (slug:string) => { cart.add(slug); setDrawer(true); };
 
   return <div className="market-root">
@@ -109,45 +87,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
     </div></header>
 
     <main>
-      <section id="beranda" className="duy-hero" aria-label="Menu unggulan Dapur Ummi Kyana" onMouseEnter={()=>setHoverPaused(true)} onMouseLeave={()=>setHoverPaused(false)} onFocusCapture={()=>setHoverPaused(true)} onBlurCapture={()=>setHoverPaused(false)}>
-        <div className="container duy-hero-layout">
-          <div className="duy-hero-intro">
-            <span className="duy-kicker"><span className="duy-kicker-dot"/> MADE WITH LOVE IN PALEMBANG</span>
-            <h1>Good food.<br/><em>Good moments.</em></h1>
-            <p>Masakan rumahan, nasi box, dan katering untuk setiap cerita. Pilih hidangan favoritmu, atur jumlahnya, dan pesan langsung melalui website.</p>
-            <div className="duy-hero-intro-actions">
-              <a href="#menu" className="duy-text-link">Explore our menu <ArrowUpRight size={17}/></a>
-              <span>01 — MENU PILIHAN</span>
-            </div>
-          </div>
-          <div className="duy-hero-center">
-            <span className="duy-hero-orbit duy-hero-orbit-one" aria-hidden="true"/>
-            <span className="duy-hero-orbit duy-hero-orbit-two" aria-hidden="true"/>
-            <div className="duy-hero-dish" key={current?.slug}>
-              {current&&<ProductVisual product={current} hero/>}
-            </div>
-            <div className="duy-hero-price">
-              <div><small>MENU UNGGULAN · HARGA DEMO</small><strong>{formatRupiah(current?.price_idr||0)}</strong></div>
-              {current&&<button type="button" onClick={()=>addToCart(current.slug)}>Add to cart <ArrowRight size={18}/></button>}
-            </div>
-          </div>
-          <div className="duy-hero-choices" aria-label="Pilih makanan unggulan">
-            <div className="duy-choices-heading"><span>OUR FAVORITES</span><small>{String(active+1).padStart(2,'0')} / {String(featured.length).padStart(2,'0')}</small></div>
-            {featured.slice(0,3).map((item,index)=><button className={'duy-choice '+(index===active?'duy-choice-active':'')} key={item.slug} type="button" onClick={()=>setActive(index)} aria-pressed={index===active}>
-              <span className="duy-choice-photo"><ProductVisual product={item} compact/></span>
-              <span className="duy-choice-label"><strong>{item.name}</strong><small>{formatRupiah(item.price_idr)}</small></span>
-              <ArrowUpRight size={16}/>
-            </button>)}
-            <div className="duy-hero-controls">
-              <button type="button" onClick={()=>changeSlide(-1)} aria-label="Makanan sebelumnya"><ChevronLeft size={19}/><span>Prev</span></button>
-              <span className="duy-progress-track"><i key={active} style={{animationPlayState:paused?'paused':'running'}}/></span>
-              <button type="button" onClick={()=>changeSlide(1)} aria-label="Makanan selanjutnya"><span>Next</span><ChevronRight size={19}/></button>
-              <button className="duy-pause" type="button" onClick={()=>setManualPaused(x=>!x)} aria-label={paused?'Putar carousel':'Jeda carousel'}>{paused?<Play size={15}/>:<Pause size={15}/>}</button>
-            </div>
-          </div>
-        </div>
-        <div className="container duy-hero-bottom"><span><Sparkles size={15}/> HOMEMADE • FRESHLY PREPARED</span><span>PALEMBANG, SUMATERA SELATAN</span><a href="#menu">SCROLL TO DISCOVER ↓</a></div>
-      </section>
+      <HeroSection featured={featured} active={active} onSelect={setActive} onPrevious={()=>changeSlide(-1)} onNext={nextSlide} onAdd={addToCart}/>
 
       <section className="market-quick-categories" aria-label="Jelajahi kategori">
         <div className="container market-shortcut-grid">
@@ -181,24 +121,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       </section>
       <div className="market-ticker"><div className="container market-ticker-inner"><span><Leaf size={18}/> Menu rumahan</span><i/><span><UtensilsCrossed size={18}/> Rasa Nusantara</span><i/><span><Truck size={18}/> Tanya jadwal pengiriman</span><i/><span><HeartHandshake size={18}/> Catering & acara</span></div></div>
 
-      <section className="market-catalog-section" id="menu"><div className="container">
-        <div className="market-section-head"><div><span className="market-eyebrow">PILIH YANG KAMU SUKA</span><h2>Menu pilihan <em>dapur kami.</em></h2><p>Jelajahi menu, pilih porsi, dan selesaikan checkout demo langsung di website.</p></div><span className="market-section-number">01 / OUR MENU</span></div>
-        {<div className="market-menu-note"><Check size={18}/><p><strong>Mode demo.</strong> Harga merupakan referensi historis dan bukan penawaran aktif. Pembayaran hanya simulasi tanpa uang asli. Foto berasal dari aset website arsip 2025; menu, komposisi, dan harga terkini tetap perlu dikonfirmasi.</p></div>}
-        <div className="market-product-toolbar">
-          <div className="market-category-tabs" role="group" aria-label="Filter menu">{categories.map(cat=><button type="button" key={cat} className={category===cat?'market-tab--active':''} aria-pressed={category===cat} onClick={()=>{setCategory(cat);setShowAll(false)}}>{cat}</button>)}</div>
-          <label className="market-search"><Search size={17}/><input type="search" placeholder="Cari hidangan..." aria-label="Cari menu makanan" value={search} onChange={event=>{setSearch(event.target.value);setShowAll(false)}}/></label>
-        </div>
-        <div className="duy-product-grid">{visible.map((product,index)=><article key={product.slug} className="duy-product-card" style={{animationDelay:(Math.min(index,7)*65)+'ms'}}>
-          <div className="duy-product-image">
-            {product.featured&&<span className="duy-featured-label">OUR FAVORITE</span>}
-            <button className="duy-product-visual-trigger" type="button" onClick={()=>{setSelectedProduct(product);setDetailQty(1)}} aria-label={'Lihat detail '+product.name}><ProductVisual product={product}/></button>
-            <button type="button" className="duy-quick-cart" onClick={()=>addToCart(product.slug)} aria-label={'Tambahkan '+product.name}><Plus size={20}/></button>
-          </div>
-          <div className="duy-product-content"><span>{product.category}</span><h3><button type="button" onClick={()=>{setSelectedProduct(product);setDetailQty(1)}}>{product.name} <ArrowUpRight size={15}/></button></h3><p>{product.description}</p><div className="duy-product-bottom"><strong>{formatRupiah(product.price_idr)}</strong><button type="button" onClick={()=>{setSelectedProduct(product);setDetailQty(1)}}>Lihat menu <ArrowRight size={16}/></button></div></div>
-        </article>)}</div>
-        {filtered.length===0&&<div className="market-empty-result"><Search size={27}/><h3>Menu tidak ditemukan</h3><p>Coba kategori atau kata kunci lain.</p></div>}
-        {filtered.length>8&&<div className="market-view-all"><button type="button" onClick={()=>setShowAll(!showAll)}>{showAll?'Tampilkan lebih sedikit':'Lihat semua '+filtered.length+' menu'} <ChevronDown className={showAll?'market-chevron-up':''} size={17}/></button></div>}
-      </div></section>
+      <CatalogSection products={visible} categories={categories} total={filtered.length} category={category} search={search} expanded={showAll} onCategory={value=>{setCategory(value);setShowAll(false)}} onSearch={value=>{setSearch(value);setShowAll(false)}} onExpand={()=>setShowAll(v=>!v)} onOpen={setSelectedProduct} onAdd={addToCart}/>
 
       <section className="market-offer-section"><div className="container market-offer-grid">
         <div className="market-offer-copy"><span className="market-eyebrow">DARI DAPUR UNTUK ACARA KAMU</span><h2>Ada acara? <em>Biar kami yang siapkan.</em></h2><p>Dari snack box hingga tumpeng mini dan prasmanan, temukan pilihan layanan dari arsip Dapur Ummi Kyana. Tanyakan paket, kapasitas, dan harga terkini.</p><Link href="/layanan" className="market-button market-button--primary">Eksplor paket catering <ArrowUpRight size={17}/></Link><div className="market-offer-note">Pilihan dan harga perlu konfirmasi penjual.</div></div>
@@ -255,33 +178,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
       <div className="market-footer-base"><span>© {new Date().getFullYear()} Dapur Ummi Kyana Palembang.</span><span>Dibuat dengan sepenuh hati. · Fotografi situs lama, direstorasi dari arsip GitHub</span></div>
     </div></footer>
 
-    {selectedProduct&&<div className="duy-dialog-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setSelectedProduct(null)}}>
-      <section className="duy-detail-dialog" role="dialog" aria-modal="true" aria-label={'Detail '+selectedProduct.name}>
-        <div className="duy-detail-photo">
-          <span className="duy-detail-deco" aria-hidden="true">FRESH FROM OUR KITCHEN</span>
-          <ProductVisual product={selectedProduct} hero/>
-          <div className="duy-detail-photo-caption"><span>MADE WITH LOVE</span><strong>Homemade,<br/>for you.</strong></div>
-        </div>
-        <div className="duy-detail-info">
-          <button type="button" className="duy-dialog-close" aria-label="Tutup detail" onClick={()=>setSelectedProduct(null)}><X size={21}/></button>
-          <span className="duy-kicker">{selectedProduct.category} / DETAIL MENU</span>
-          <h2>{selectedProduct.name}</h2>
-          <div className="duy-detail-summary"><span><Leaf size={16}/> Masakan rumahan</span><span><Clock3 size={16}/> Pesan terjadwal</span></div>
-          <p>{selectedProduct.description}</p>
-          <div className="duy-detail-inclusions">
-            <div><strong>Informasi pesanan</strong><small>Disesuaikan dengan kebutuhanmu</small></div>
-            <div className="duy-detail-row"><span>Harga referensi per porsi</span><strong>{formatRupiah(selectedProduct.price_idr)}</strong></div>
-            <div className="duy-detail-row"><span>Komposisi & alergen</span><small>Belum diverifikasi oleh dapur</small></div>
-            <div className="duy-detail-row"><span>Ketersediaan</span><small>Konfirmasi melalui jadwal checkout</small></div>
-          </div>
-          <div className="duy-detail-checkout">
-            <div className="duy-quantity"><button type="button" aria-label="Kurangi jumlah" disabled={detailQty<=1} onClick={()=>setDetailQty(n=>Math.max(1,n-1))}><Minus size={16}/></button><strong>{detailQty}</strong><button type="button" aria-label="Tambah jumlah" disabled={detailQty>=50} onClick={()=>setDetailQty(n=>Math.min(50,n+1))}><Plus size={16}/></button></div>
-            <button type="button" className="duy-detail-add" onClick={()=>{for(let i=0;i<detailQty;i++)cart.add(selectedProduct.slug);setSelectedProduct(null);setDrawer(true)}}>Tambah {formatRupiah(selectedProduct.price_idr*detailQty)} <ArrowRight size={18}/></button>
-          </div>
-          <small className="duy-detail-disclaimer">Harga arsip untuk demo. Pembayaran simulasi, tidak ada transaksi uang asli.</small>
-        </div>
-      </section>
-    </div>}
+    <ProductDetailDialog product={selectedProduct} onClose={()=>setSelectedProduct(null)} onAdd={(slug,qty)=>{for(let i=0;i<qty;i++)cart.add(slug);setSelectedProduct(null);setDrawer(true)}}/>
     <nav className="duy-mobile-dock" aria-label="Navigasi cepat mobile"><a href="#beranda" aria-label="Beranda"><UtensilsCrossed size={20}/><span>Home</span></a><a href="#menu" aria-label="Menu makanan"><Search size={20}/><span>Menu</span></a><button type="button" aria-label="Keranjang" onClick={()=>setDrawer(true)}><ShoppingBag size={20}/><span>Cart {cart.count>0?'('+cart.count+')':''}</span></button><Link href="/account" aria-label="Akun"><HeartHandshake size={20}/><span>Akun</span></Link></nav>
     {drawer&&<div className="drawer-layer" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setDrawer(false)}}>
       <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="market-cart-title">
