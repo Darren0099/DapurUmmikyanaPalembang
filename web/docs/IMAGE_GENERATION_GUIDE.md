@@ -1,6 +1,6 @@
 # Dapur Ummi Kyana — Food imagery art direction
 
-**Reference caveat:** The Pinterest short URL https://pin.it/24oAoCJMK cannot currently be inspected by the automated tool. These prompts are based on the user's previously supplied clean, editorial food-commerce references. They describe new original photographs; do not copy any exact board photograph or invented restaurant product. Use only photos approved by the business owner for published products.
+**Reference coverage:** The short URL https://pin.it/24oAoCJMK resolves to Akito Eiji's **Desain web** board. A browser screenshot exposed only a partial mosaic behind a Pinterest login dialog: light-background food-editorial designs with orange accents alongside brighter graphic layouts. The prompts combine those observable traits with the user's earlier food-commerce screenshots. Individual full-size pins and their animation are not verified. Do not copy board photographs or invent merchant products. Use only photos approved by the business owner for published products.
 
 ## Shared art direction
 Natural contemporary food editorial photography for an Indonesian home-cooking catering brand in Palembang. Warm white (#fffefa) and soft limestone surfaces, restrained orange (#ef7827) accents in linens and tableware, morning side-window light, shallow but not excessive depth of field, honest texture, handmade presentation, appetizing realistic portions, understated styling, premium but approachable, no labels or typography embedded in image, no watermarks, no synthetic plastic food gloss.
