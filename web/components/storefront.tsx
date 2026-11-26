@@ -15,6 +15,7 @@ import ServiceCards from '@/components/service-cards';
 import HeroSection from '@/components/storefront/hero-section';
 import CatalogSection from '@/components/storefront/catalog-section';
 import ProductDetailDialog from '@/components/storefront/product-detail-dialog';
+import EditorialShowcase from '@/components/storefront/editorial-showcase';
 import { selectFeaturedProducts,filterProducts } from '@/lib/storefront-presentation';
 
 
@@ -107,19 +108,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
           })}
         </div>
       </section>
-      <section className="market-editorial-picks">
-        <div className="container">
-          <div className="market-editorial-picks-heading"><span className="market-eyebrow">PILIHAN DARI KATALOG LAMA</span><p>Inspirasi hidangan untuk berbagai suasana. Harga yang ditampilkan adalah referensi arsip.</p></div>
-          <div className="market-editorial-picks-grid">
-            {[featured[1]||products[1],featured[2]||products[2]].filter((p):p is Product=>Boolean(p)).map((p,i)=>(
-              <article className={'market-editorial-pick market-editorial-pick--'+(i+1)} key={p.slug}>
-                <div className="market-editorial-pick-image"><ProductVisual product={p} hero/></div>
-                <div className="market-editorial-pick-copy"><span>PILIHAN 0{i+1}</span><h2>{p.name}</h2><p>{p.description}</p><div><strong>{formatRupiah(p.price_idr)} <small>referensi</small></strong><button type="button" onClick={()=>addToCart(p.slug)}>Pilih menu <ArrowUpRight size={16}/></button></div></div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <EditorialShowcase products={featured} onOpen={setSelectedProduct} onAdd={addToCart}/>
       <div className="market-ticker"><div className="container market-ticker-inner"><span><Leaf size={18}/> Menu rumahan</span><i/><span><UtensilsCrossed size={18}/> Rasa Nusantara</span><i/><span><Truck size={18}/> Tanya jadwal pengiriman</span><i/><span><HeartHandshake size={18}/> Catering & acara</span></div></div>
 
       <CatalogSection products={visible} categories={categories} total={filtered.length} category={category} search={search} expanded={showAll} onCategory={value=>{setCategory(value);setShowAll(false)}} onSearch={value=>{setSearch(value);setShowAll(false)}} onExpand={()=>setShowAll(v=>!v)} onOpen={setSelectedProduct} onAdd={addToCart}/>
