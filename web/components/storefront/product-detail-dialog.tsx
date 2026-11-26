@@ -29,7 +29,7 @@ export default function ProductDetailDialog({product,onClose,onAdd}:Props){
    };
    document.addEventListener('keydown',onKey);
    return()=>{document.removeEventListener('keydown',onKey);document.body.style.overflow=previousOverflow;previous?.focus()};
- },[product,onClose]);
+ },[product?.slug]);
  if(!product)return null;
  return <div className="vnext-detail-backdrop" onMouseDown={e=>{if(e.currentTarget===e.target)onClose()}}>
    <section className="vnext-detail" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="vnext-detail-title" tabIndex={-1}>
