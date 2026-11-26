@@ -5,9 +5,9 @@
 Stack: Next.js 16.4.6 + React 19.3.1 + TypeScript 5.9.3 + CSS + Lucide. Cloudflare D1 Worker routes and response shapes remain unchanged.
 
 ### Evidence and reference limitations
-- User's Pinterest link: https://pin.it/24oAoCJMK — inaccessible from automated retrieval in this session; cannot claim a complete visual inventory of the board.
+- User's Pinterest link: https://pin.it/24oAoCJMK resolves to Akito Eiji's Pinterest board **Desain web**. A browser screenshot showed a Pinterest login overlay and a partial mosaic of web-design pins: food editorial layouts on light backgrounds, orange CTA accents, typography-led designs, and a few more saturated green / multicolor compositions. Exact pin interactions and individual full-size designs were not observable through the login overlay. The board metadata and visible pin count were inconsistent, so no exact count is asserted.
 - Earlier five image references shared by the user remain useful as *design direction*, not as licensed assets to copy: white/orange editorial food hero, food-centered menu cards, split detail and checkout, split authentication.
-- The redesign is an original interpretation until the board's individual pins or screenshots can be inspected.
+- The redesign is an original interpretation of the visible board mosaic and user-supplied food examples, not a reproduction of any individual pin.
 
 ### Existing problems
 1. Four global stylesheets (`globals.css`, `editorial.css`, `warm-editorial.css`, `food-redesign.css`) contain overlapping selectors, creating brittle cascade and unpredictable responsive rules.
