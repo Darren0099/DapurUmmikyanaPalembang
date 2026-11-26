@@ -44,6 +44,7 @@ export default function Storefront({products, live}:{products:Product[];live:boo
 
   const categories = useMemo(()=>['Semua',...Array.from(new Set(products.map(p=>p.category)))],[products]);
   const featured=useMemo(()=>selectFeaturedProducts(products),[products]);
+  const current=featured[active % Math.max(1,featured.length)];
   const filtered=useMemo(()=>filterProducts(products,category,search),[products,category,search]);
   const visible=showAll?filtered:filtered.slice(0,8);
   const chosen = cart.items.map(item=>({item,product:products.find(p=>p.slug===item.slug)}))
