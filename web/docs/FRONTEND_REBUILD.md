@@ -54,3 +54,20 @@ No API handlers, D1 schema, payment status, cart state schema, or routes are edi
 - Mobile: 360, 390, 768 and 1024px widths; no horizontal overflow; tap targets >=44px.
 - SEO: one H1 per homepage, image alt, meaningful headings and preexisting metadata.
 - Runtime: test build and check Vercel READY; browser screenshots and functional testing before declaring fully verified.
+
+
+## Additional visual references supplied November 26
+Owner provided five complete screenshots and two motion reference links. Their roles:
+1. Foodbar — charcoal panel, dominant circular dish and horizontal dark mini-cards: implemented as `components/storefront/editorial-showcase.tsx`.
+2. Food Zone — bright three-part hero, oversized food photography, orange active selector: implemented in `components/storefront/hero-section.tsx` plus `app/storefront-vnext.css`.
+3. Inside Healthy Kitchen — large image left / information panel right: implemented in `components/storefront/product-detail-dialog.tsx` with `app/food-reference-2026.css`.
+4. Flying Food Composition — mixed-height photography and generous whitespace: used as directional guidance for editorial sections, not literal reproduction.
+5. Full-page food shop reference — varied section rhythm, compact cards, editorial photos: used as a system-level guide for the existing long-form homepage.
+
+Motion links:
+- https://pin.it/2lOf4gk0G (Pinterest video pin #920282505125770149, web design / creative food site)
+- https://pin.it/4MyUUyGoX (Pinterest video pin #955748352150434796, digital menu / product filter interface)
+
+Pinterest metadata and video URLs were retrievable, but individual video frames were not successfully inspected. Motion timing is an original implementation inferred from still compositions. Do not claim an exact recreation of the videos.
+
+Implementation safeguards: No `cloudflare/worker.js`, `cloudflare/schema.sql`, `app/api/**`, or product price data edited in this visual pass. Historical catalog labels and demo-payment warnings remain.
